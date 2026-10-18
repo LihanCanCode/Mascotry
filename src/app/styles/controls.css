@@ -1,0 +1,319 @@
+/*
+  Everything a person operates: fields, buttons, the segmented pickers, the
+  preview stage and the export panel. Imported by app.css.
+*/
+/* ---------- fields ---------- */
+
+.group {
+  margin: 0 0 var(--s-5);
+  padding: 0;
+  border: 0;
+}
+
+.group-title {
+  padding: 0;
+  margin-bottom: var(--s-3);
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+}
+
+.field,
+.swatch {
+  display: grid;
+  gap: var(--s-1);
+  margin: 0 0 var(--s-4);
+}
+
+.field-label {
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.field-hint {
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.text-input,
+.select {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  background: var(--sheet-sunk);
+  color: var(--ink);
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+  font: inherit;
+  font-size: var(--t-sm);
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: var(--s-3);
+}
+
+.swatch input[type='color'] {
+  width: 100%;
+  height: 2.4rem;
+  padding: 2px;
+  background: var(--sheet-sunk);
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+}
+
+.swatch-value {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: var(--s-3);
+}
+
+.field-check {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.field-check input {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--paint);
+}
+
+.range {
+  width: 100%;
+  accent-color: var(--paint);
+}
+
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Hidden from view but still a real radio: focusable, announced, and reached by
+   the arrow keys. Zero opacity alone would leave it sitting over the layout. */
+.segment input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.segment label {
+  display: block;
+  padding: var(--s-2) var(--s-3);
+  background: var(--sheet);
+  font-size: var(--t-sm);
+  cursor: pointer;
+  border-left: var(--hair) solid var(--rule);
+}
+
+.segment:first-child label {
+  border-left: 0;
+}
+
+.segment input:checked + label {
+  background: var(--ink);
+  color: var(--bench);
+  font-weight: 600;
+}
+
+.segment input:focus-visible + label {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+/* ---------- buttons ---------- */
+
+.button {
+  display: inline-grid;
+  gap: 2px;
+  padding: var(--s-3) var(--s-4);
+  background: var(--sheet);
+  color: var(--ink);
+  border: var(--stroke) solid var(--line);
+  border-radius: var(--r-sm);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.button:hover {
+  background: var(--paint-quiet);
+}
+
+.button-loud {
+  background: var(--paint);
+  color: var(--paint-ink);
+  border-color: var(--paint);
+}
+
+.button-loud:hover {
+  background: var(--ink);
+  color: var(--bench);
+  border-color: var(--ink);
+}
+
+.button-quiet {
+  border-width: var(--hair);
+  border-color: var(--rule);
+  font-weight: 500;
+}
+
+.button-note {
+  font-weight: 400;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.button-loud .button-note {
+  color: var(--paint-ink);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-sm);
+}
+
+.theme-mark {
+  font-size: 1.1em;
+}
+
+/* ---------- preview ---------- */
+
+.stage {
+  display: grid;
+  place-items: center;
+  /* Wide enough for the largest preview and no wider: a full-width field of
+     checkerboard around a 160px mascot reads as an empty page, not a stage. */
+  max-width: 24rem;
+  padding: var(--s-5);
+  margin-bottom: var(--s-3);
+  border: var(--stroke) solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.stage-light {
+  background: #ffffff;
+}
+
+.stage-dark {
+  background: #10100f;
+}
+
+.stage-checker {
+  background-color: var(--checker-a);
+  background-image:
+    conic-gradient(var(--checker-b) 25%, transparent 0 50%, var(--checker-b) 0 75%, transparent 0);
+  background-size: 20px 20px;
+}
+
+.stage-empty {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+}
+
+.stage-light .stage-empty {
+  color: #4a4a48;
+}
+
+.stage-dark .stage-empty {
+  color: #d7d7d2;
+}
+
+/* ---------- export ---------- */
+
+.download-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-4);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--s-1);
+  margin-top: var(--s-5);
+}
+
+.tab {
+  padding: var(--s-2) var(--s-4);
+  background: transparent;
+  color: var(--ink-soft);
+  border: var(--hair) solid transparent;
+  border-bottom: 0;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  font: inherit;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab[aria-selected='true'] {
+  background: var(--ink);
+  color: var(--bench);
+}
+
+.code {
+  margin: 0;
+  padding: var(--s-4);
+  overflow-x: auto;
+  background: var(--sheet-sunk);
+  border: var(--hair) solid var(--rule);
+  border-radius: 0 var(--r-sm) var(--r-sm) var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+
+.copy-said {
+  font-size: var(--t-xs);
+}
+
+.copy-copied {
+  color: var(--good);
+}
+
+.copy-failed {
+  color: var(--bad);
+}
+
+.footer {
+  padding-block: var(--s-6) var(--s-7);
+  border-top: var(--hair) solid var(--rule);
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+}
+
+.footer p {
+  margin: 0;
+  max-width: 62ch;
+}

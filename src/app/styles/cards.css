@@ -1,0 +1,95 @@
+/*
+  The character grid: fourteen sheets of punched animation paper, peg-bar holes
+  and all. Imported by app.css.
+*/
+/* ---------- the character grid ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: var(--s-3);
+}
+
+.card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--s-1);
+  /* The bottom strip is kept clear for the picked marker, so choosing a card
+     never covers its tag and never changes the grid's row heights. */
+  padding: var(--s-5) var(--s-2) 2rem;
+  background: var(--sheet);
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--line);
+  background: var(--sheet);
+}
+
+/* Punched paper: the three peg-bar holes every sheet of animation paper has. */
+.card-pegs {
+  position: absolute;
+  top: var(--s-2);
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--bench);
+  box-shadow:
+    0 0 0 1px var(--rule),
+    -13px 0 0 0 var(--bench), -13px 0 0 1px var(--rule),
+    13px 0 0 0 var(--bench), 13px 0 0 1px var(--rule);
+}
+
+.card-art {
+  display: grid;
+  place-items: center;
+}
+
+.card-art-empty {
+  width: 100%;
+  height: 100%;
+  background: var(--sheet-sunk);
+  border-radius: var(--r-sm);
+}
+
+.card canvas {
+  display: block;
+}
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+}
+
+.card-tag {
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.card[aria-checked='true'] {
+  border: var(--stroke) solid var(--line);
+  padding: calc(var(--s-5) - 1px) calc(var(--s-2) - 1px) calc(2rem - 1px);
+}
+
+/* Marked by a word as well as a colour, so the choice is never only green. */
+.card-picked {
+  position: absolute;
+  inset-inline: -1px;
+  bottom: -1px;
+  padding: 2px;
+  background: var(--key);
+  color: var(--key-ink);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+

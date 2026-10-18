@@ -1,0 +1,192 @@
+/*
+  The panels below the hero: the plot-buddy picker and its live embed code, the
+  notice board, and the plot table. Imported by demo.css.
+*/
+.buddy-controls {
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.buddy-controls legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.buddy-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Hidden from view but still a real radio: focusable, announced, and reached by
+   the arrow keys. Zero opacity alone would leave it sitting over the layout. */
+.buddy-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.buddy-option label {
+  display: block;
+  padding: 0.5rem 0.9rem;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.buddy-option input:checked + label {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  font-weight: 600;
+}
+
+.buddy-option input:focus-visible + label {
+  outline: 3px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+.buddy-role {
+  margin: 0 0 0.25rem;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+}
+
+.buddy-status,
+.copy-result {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.field {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 22rem;
+  margin: 1rem 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.field input[type='range'] {
+  width: 100%;
+  accent-color: var(--leaf);
+}
+
+.board {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 48rem) {
+  .board {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.board li {
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--leaf);
+}
+
+.board li p:last-child {
+  margin-bottom: 0;
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+
+.board-when {
+  margin: 0 0 0.25rem;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.plots {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+.plots caption {
+  margin-bottom: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.plots :is(th, td) {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.plots thead th {
+  border-bottom: 2px solid var(--ink);
+}
+
+.bottom {
+  padding-block: 2rem 3rem;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+.bottom p {
+  margin: 0 0 0.5rem;
+  max-width: 60ch;
+}
+
+/*
+  At a wide width the picker alone leaves half the panel empty, and the most
+  honest thing to put in that space is the markup this very page is running.
+*/
+.buddy-grid {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  align-items: start;
+}
+
+@media (min-width: 52rem) {
+  .buddy-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.buddy-code h3 {
+  margin-top: 0;
+}
+
+.buddy-code-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+#buddy-code {
+  margin: 0 0 0.75rem;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  background: var(--sunk);
+  border: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
