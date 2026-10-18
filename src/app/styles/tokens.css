@@ -1,0 +1,114 @@
+/*
+  Mascotry design tokens.
+
+  The identity comes from where this kind of artwork actually gets made: an
+  animation bench. Cel-paint benches and model-sheet walls are a cool
+  institutional sage-grey, the line work is a deep teal-black ink rather than
+  black, and the one loud colour in the room is the chroma green that gets used
+  to key a character out of its background — a green this project already draws
+  behind its own sheets. So: sage bench, teal ink, one deep rose paint pot for
+  actions, and chroma green reserved for whatever is live right now.
+
+  Every pairing in here is held to WCAG 2.2 AA by contrast.test.ts.
+*/
+:root {
+  --bench: #dde6e2;
+  --sheet: #f8fbf9;
+  --sheet-sunk: #e4ece8;
+  --ink: #0d2a26;
+  --ink-soft: #3a5a54;
+  --line: #0d2a26;
+  --rule: #a8bdb7;
+  --paint: #9e1d45;
+  --paint-ink: #ffffff;
+  --paint-quiet: #f6dde5;
+  --key: #00e05f;
+  --key-ink: #0d2a26;
+  --focus: #0d2a26;
+  --focus-halo: #00e05f;
+  --good: #0c6340;
+  --bad: #9a2318;
+  --checker-a: #ffffff;
+  --checker-b: #cfdbd6;
+
+  /*
+    No web fonts anywhere in this project, so the personality has to come out of
+    the stack. The display face is a condensed grotesque, which is the voice of
+    production paperwork — peg-bar sheets, exposure charts, shipping labels.
+  */
+  --font-display: 'Bahnschrift SemiCondensed', 'Avenir Next Condensed', 'Roboto Condensed',
+    'Arial Narrow', 'Liberation Sans Narrow', system-ui, sans-serif;
+  --font-body: 'Segoe UI Variable Text', 'Segoe UI', -apple-system, BlinkMacSystemFont,
+    ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'Cascadia Code', 'SF Mono', Consolas, monospace;
+
+  /* Type scale at 1.25, so a heading always sits two clear steps above its body. */
+  --t-xs: 0.8125rem;
+  --t-sm: 0.9375rem;
+  --t-base: 1.0625rem;
+  --t-lg: 1.3125rem;
+  --t-xl: 1.625rem;
+  --t-display: clamp(2.25rem, 1.6rem + 3.2vw, 4rem);
+
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2.25rem;
+  --s-7: 3.5rem;
+
+  --r-sm: 3px;
+  --r-md: 5px;
+  --hair: 1px;
+  --stroke: 2px;
+  --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+  --dur: 130ms;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bench: #081715;
+    --sheet: #112d29;
+    --sheet-sunk: #0b201d;
+    --ink: #e6f1ed;
+    --ink-soft: #a6c0ba;
+    --line: #e6f1ed;
+    --rule: #38605a;
+    --paint: #ff9ab2;
+    --paint-ink: #2b0613;
+    --paint-quiet: #431323;
+    --key: #00e05f;
+    --key-ink: #082018;
+    --focus: #00e05f;
+    --focus-halo: #081715;
+    --good: #5fd9a0;
+    --bad: #ff9c8f;
+    --checker-a: #1a3c37;
+    --checker-b: #0e2622;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bench: #081715;
+  --sheet: #112d29;
+  --sheet-sunk: #0b201d;
+  --ink: #e6f1ed;
+  --ink-soft: #a6c0ba;
+  --line: #e6f1ed;
+  --rule: #38605a;
+  --paint: #ff9ab2;
+  --paint-ink: #2b0613;
+  --paint-quiet: #431323;
+  --key: #00e05f;
+  --key-ink: #082018;
+  --focus: #00e05f;
+  --focus-halo: #081715;
+  --good: #5fd9a0;
+  --bad: #ff9c8f;
+  --checker-a: #1a3c37;
+  --checker-b: #0e2622;
+  color-scheme: dark;
+}
