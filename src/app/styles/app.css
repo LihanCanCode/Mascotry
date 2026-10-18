@@ -1,0 +1,672 @@
+/*
+  Mascotry, laid out as the room it comes from: an animation bench with model
+  sheets pinned above it. Cards are punched sheets, the hero is a nine-cell
+  model sheet with the character standing in the middle cell, and the only
+  bright thing anywhere is the chroma green that marks whatever is live.
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bench);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--t-base);
+  line-height: 1.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+:is(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: var(--s-4);
+  top: calc(-1 * var(--s-7));
+  z-index: 10;
+  padding: var(--s-2) var(--s-4);
+  background: var(--key);
+  color: var(--key-ink);
+  font-weight: 600;
+  text-decoration: none;
+  border: var(--stroke) solid var(--line);
+}
+
+.skip:focus {
+  top: var(--s-3);
+}
+
+/* ---------- shell ---------- */
+
+.masthead,
+main > *,
+.bench,
+.footer {
+  max-width: 74rem;
+  margin-inline: auto;
+  padding-inline: var(--s-4);
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  padding-block: var(--s-4);
+}
+
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* The product in nine squares: the shape of every sheet it makes. */
+.wordmark-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 5px);
+  gap: 2px;
+}
+
+.wordmark-grid i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  background: var(--ink);
+}
+
+.wordmark-grid i:nth-child(5) {
+  background: var(--key);
+}
+
+/* ---------- hero ---------- */
+
+.hero {
+  display: grid;
+  gap: var(--s-6);
+  align-items: center;
+  padding-block: var(--s-6) var(--s-7);
+  border-top: var(--hair) solid var(--rule);
+}
+
+.hero h1 {
+  margin: 0 0 var(--s-4);
+  font-family: var(--font-display);
+  font-size: var(--t-display);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.lead {
+  margin: 0 0 var(--s-5);
+  max-width: 46ch;
+  font-size: var(--t-lg);
+  color: var(--ink-soft);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin: 0;
+}
+
+.hero-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  align-items: center;
+}
+
+/*
+  A model sheet: nine cells printed on paper, the character in the centre one.
+  It is the only ornament in the page and it earns its place by showing what the
+  product actually makes.
+*/
+.sheet3 {
+  display: grid;
+  place-items: center;
+  width: min(100%, 24rem);
+  aspect-ratio: 1;
+  background-color: var(--sheet);
+  background-image:
+    linear-gradient(to right, transparent calc(33.333% - 1px), var(--rule) calc(33.333% - 1px),
+      var(--rule) 33.333%, transparent 33.333%, transparent calc(66.666% - 1px),
+      var(--rule) calc(66.666% - 1px), var(--rule) 66.666%, transparent 66.666%),
+    linear-gradient(to bottom, transparent calc(33.333% - 1px), var(--rule) calc(33.333% - 1px),
+      var(--rule) 33.333%, transparent 33.333%, transparent calc(66.666% - 1px),
+      var(--rule) calc(66.666% - 1px), var(--rule) 66.666%, transparent 66.666%);
+  border: var(--stroke) solid var(--line);
+}
+
+.hero-caption {
+  margin: 0;
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+}
+
+@media (min-width: 56rem) {
+  .hero {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+/* ---------- steps ---------- */
+
+.step {
+  padding-block: var(--s-6);
+  border-top: var(--hair) solid var(--rule);
+}
+
+.step h2 {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* The flow really is a sequence, so the numbers carry information. */
+.step-no {
+  display: grid;
+  place-items: center;
+  width: 1.7em;
+  height: 1.7em;
+  flex: none;
+  font-size: 0.8em;
+  background: var(--ink);
+  color: var(--bench);
+}
+
+.step-note,
+.hint {
+  margin: 0 0 var(--s-5);
+  max-width: 60ch;
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+}
+
+.sub {
+  margin: var(--s-5) 0 var(--s-3);
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+}
+
+.bench {
+  display: grid;
+  gap: 0 var(--s-6);
+}
+
+.bench > .step:first-child {
+  border-top: var(--hair) solid var(--rule);
+}
+
+@media (min-width: 60rem) {
+  .bench {
+    grid-template-columns: 1fr 22rem;
+  }
+  .step-sticky {
+    position: sticky;
+    top: var(--s-4);
+    align-self: start;
+  }
+}
+
+.status {
+  margin: 0;
+  padding-block: var(--s-1);
+  min-height: 1.5em;
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+}
+
+.alarm {
+  margin: 0 auto var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border: var(--stroke) solid var(--bad);
+  color: var(--bad);
+  background: var(--sheet);
+  font-size: var(--t-sm);
+}
+
+/* ---------- the character grid ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: var(--s-3);
+}
+
+.card {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--s-1);
+  padding: var(--s-5) var(--s-2) var(--s-3);
+  background: var(--sheet);
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--line);
+  background: var(--sheet);
+}
+
+/* Punched paper: the three peg-bar holes every sheet of animation paper has. */
+.card-pegs {
+  position: absolute;
+  top: var(--s-2);
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--bench);
+  box-shadow:
+    0 0 0 1px var(--rule),
+    -13px 0 0 0 var(--bench), -13px 0 0 1px var(--rule),
+    13px 0 0 0 var(--bench), 13px 0 0 1px var(--rule);
+}
+
+.card-art {
+  display: grid;
+  place-items: center;
+}
+
+.card-art-empty {
+  width: 100%;
+  height: 100%;
+  background: var(--sheet-sunk);
+  border-radius: var(--r-sm);
+}
+
+.card canvas {
+  display: block;
+}
+
+.card-name {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+}
+
+.card-tag {
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.card[aria-checked='true'] {
+  border: var(--stroke) solid var(--line);
+  padding: calc(var(--s-5) - 1px) calc(var(--s-2) - 1px) calc(var(--s-3) - 1px);
+}
+
+/* Marked by a word as well as a colour, so the choice is never only green. */
+.card-picked {
+  position: absolute;
+  inset-inline: -1px;
+  bottom: -1px;
+  padding: 2px;
+  background: var(--key);
+  color: var(--key-ink);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- fields ---------- */
+
+.group {
+  margin: 0 0 var(--s-5);
+  padding: 0;
+  border: 0;
+}
+
+.group-title {
+  padding: 0;
+  margin-bottom: var(--s-3);
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+}
+
+.field,
+.swatch {
+  display: grid;
+  gap: var(--s-1);
+  margin: 0 0 var(--s-4);
+}
+
+.field-label {
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.field-hint {
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.text-input,
+.select {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  background: var(--sheet-sunk);
+  color: var(--ink);
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+  font: inherit;
+  font-size: var(--t-sm);
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+  gap: var(--s-3);
+}
+
+.swatch input[type='color'] {
+  width: 100%;
+  height: 2.4rem;
+  padding: 2px;
+  background: var(--sheet-sunk);
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+}
+
+.swatch-value {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: var(--s-3);
+}
+
+.field-check {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.field-check input {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--paint);
+}
+
+.range {
+  width: 100%;
+  accent-color: var(--paint);
+}
+
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.segment input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segment label {
+  display: block;
+  padding: var(--s-2) var(--s-3);
+  background: var(--sheet);
+  font-size: var(--t-sm);
+  cursor: pointer;
+  border-left: var(--hair) solid var(--rule);
+}
+
+.segment:first-child label {
+  border-left: 0;
+}
+
+.segment input:checked + label {
+  background: var(--ink);
+  color: var(--bench);
+  font-weight: 600;
+}
+
+.segment input:focus-visible + label {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+
+/* ---------- buttons ---------- */
+
+.button {
+  display: inline-grid;
+  gap: 2px;
+  padding: var(--s-3) var(--s-4);
+  background: var(--sheet);
+  color: var(--ink);
+  border: var(--stroke) solid var(--line);
+  border-radius: var(--r-sm);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.button:hover {
+  background: var(--paint-quiet);
+}
+
+.button-loud {
+  background: var(--paint);
+  color: var(--paint-ink);
+  border-color: var(--paint);
+}
+
+.button-loud:hover {
+  background: var(--ink);
+  color: var(--bench);
+  border-color: var(--ink);
+}
+
+.button-quiet {
+  border-width: var(--hair);
+  border-color: var(--rule);
+  font-weight: 500;
+}
+
+.button-note {
+  font-weight: 400;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+}
+
+.button-loud .button-note {
+  color: var(--paint-ink);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-sm);
+}
+
+.theme-mark {
+  font-size: 1.1em;
+}
+
+/* ---------- preview ---------- */
+
+.stage {
+  display: grid;
+  place-items: center;
+  padding: var(--s-5);
+  margin-bottom: var(--s-3);
+  border: var(--stroke) solid var(--line);
+  border-radius: var(--r-sm);
+}
+
+.stage-light {
+  background: #ffffff;
+}
+
+.stage-dark {
+  background: #10100f;
+}
+
+.stage-checker {
+  background-color: var(--checker-a);
+  background-image:
+    conic-gradient(var(--checker-b) 25%, transparent 0 50%, var(--checker-b) 0 75%, transparent 0);
+  background-size: 20px 20px;
+}
+
+.stage-empty {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+}
+
+.stage-light .stage-empty {
+  color: #4a4a48;
+}
+
+.stage-dark .stage-empty {
+  color: #d7d7d2;
+}
+
+/* ---------- export ---------- */
+
+.download-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-4);
+}
+
+.tabs {
+  display: flex;
+  gap: var(--s-1);
+  margin-top: var(--s-5);
+}
+
+.tab {
+  padding: var(--s-2) var(--s-4);
+  background: transparent;
+  color: var(--ink-soft);
+  border: var(--hair) solid transparent;
+  border-bottom: 0;
+  border-radius: var(--r-sm) var(--r-sm) 0 0;
+  font: inherit;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab[aria-selected='true'] {
+  background: var(--ink);
+  color: var(--bench);
+}
+
+.code {
+  margin: 0;
+  padding: var(--s-4);
+  overflow-x: auto;
+  background: var(--sheet-sunk);
+  border: var(--hair) solid var(--rule);
+  border-radius: 0 var(--r-sm) var(--r-sm) var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+.copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+
+.copy-said {
+  font-size: var(--t-xs);
+}
+
+.copy-copied {
+  color: var(--good);
+}
+
+.copy-failed {
+  color: var(--bad);
+}
+
+.footer {
+  padding-block: var(--s-6) var(--s-7);
+  border-top: var(--hair) solid var(--rule);
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+}
+
+.footer p {
+  margin: 0;
+  max-width: 62ch;
+}

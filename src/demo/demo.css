@@ -1,0 +1,421 @@
+/*
+  Mossgate Allotments — deliberately not Mascotry.
+
+  A community association's own site would be warm, a bit old-fashioned and
+  printed on whatever paper the committee had: oat paper, bark-brown ink, one
+  leaf green, and an old-style serif for the headings. Setting it this far from
+  the app's cold bench and condensed grotesque is the point. If the mascot looks
+  at home in both rooms, it travels.
+*/
+:root {
+  --paper: #f2ece0;
+  --card: #fbf8f1;
+  --sunk: #e8dfce;
+  --ink: #241b14;
+  --ink-soft: #55473a;
+  --rule: #c3b49c;
+  --leaf: #1f6033;
+  --leaf-ink: #ffffff;
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Times New Roman', serif;
+  --sans: 'Segoe UI Variable Text', 'Segoe UI', -apple-system, ui-sans-serif, system-ui, sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --paper: #15110d;
+    --card: #211a14;
+    --sunk: #2c231a;
+    --ink: #f3ebdd;
+    --ink-soft: #c2b2a0;
+    --rule: #524334;
+    --leaf: #85cf97;
+    --leaf-ink: #10200f;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --paper: #15110d;
+  --card: #211a14;
+  --sunk: #2c231a;
+  --ink: #f3ebdd;
+  --ink-soft: #c2b2a0;
+  --rule: #524334;
+  --leaf: #85cf97;
+  --leaf-ink: #10200f;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+:is(a, button, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--leaf);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+a {
+  color: var(--ink);
+  text-decoration-color: var(--leaf);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 5;
+  padding: 0.5rem 1rem;
+  background: var(--leaf);
+  color: var(--leaf-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skip:focus {
+  top: 0.75rem;
+}
+
+.top,
+main > *,
+.bottom {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  padding-block: 1rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.mark {
+  margin: 0;
+  margin-right: auto;
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.mark-leaf {
+  color: var(--leaf);
+}
+
+.top nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.9375rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-family: var(--serif);
+  font-size: clamp(2rem, 1.3rem + 3.4vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+h2 {
+  margin: 0 0 0.5rem;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+h3 {
+  margin: 0 0 0.25rem;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.lead {
+  margin: 0 0 1.5rem;
+  max-width: 44ch;
+  font-size: 1.1875rem;
+  color: var(--ink-soft);
+}
+
+.hero {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+  padding-block: 2.5rem 3rem;
+}
+
+@media (min-width: 52rem) {
+  .hero {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+
+.hero-art {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: var(--card);
+  border: 2px solid var(--ink);
+  /* The association's noticeboard: lined paper behind a pinned character. */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 1.55rem,
+    var(--sunk) 1.55rem 1.6rem
+  );
+}
+
+.hero-art-note {
+  margin: 0;
+  max-width: 24ch;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+mascotry-mascot {
+  /* Nothing is drawn yet on the first paint; fade in once the sheets arrive. */
+  opacity: 0;
+  transition: opacity 240ms ease-out;
+}
+
+mascotry-mascot.is-ready {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  mascotry-mascot {
+    transition: none;
+  }
+}
+
+.cta-row,
+.copy-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.cta {
+  padding: 0.7rem 1.2rem;
+  background: var(--leaf);
+  color: var(--leaf-ink);
+  border: 2px solid var(--leaf);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cta:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.quiet {
+  display: inline-block;
+  padding: 0.7rem 1.2rem;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.quiet:hover {
+  border-color: var(--ink);
+}
+
+.panel {
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.panel-note,
+.credit {
+  margin: 0 0 1.5rem;
+  max-width: 58ch;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+.credit {
+  margin-top: 1.5rem;
+  margin-bottom: 0;
+}
+
+.buddy-controls {
+  margin: 0 0 1rem;
+  padding: 0;
+  border: 0;
+}
+
+.buddy-controls legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.buddy-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.buddy-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.buddy-option label {
+  display: block;
+  padding: 0.5rem 0.9rem;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.buddy-option input:checked + label {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  font-weight: 600;
+}
+
+.buddy-option input:focus-visible + label {
+  outline: 3px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+.buddy-role {
+  margin: 0 0 0.25rem;
+  font-family: var(--serif);
+  font-size: 1.15rem;
+}
+
+.buddy-status,
+.copy-result {
+  margin: 0;
+  min-height: 1.4em;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.field {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 22rem;
+  margin: 1rem 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.field input[type='range'] {
+  width: 100%;
+  accent-color: var(--leaf);
+}
+
+.board {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 48rem) {
+  .board {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.board li {
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-top: 4px solid var(--leaf);
+}
+
+.board li p:last-child {
+  margin-bottom: 0;
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+
+.board-when {
+  margin: 0 0 0.25rem;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.plots {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+
+.plots caption {
+  margin-bottom: 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  text-align: left;
+}
+
+.plots :is(th, td) {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.plots thead th {
+  border-bottom: 2px solid var(--ink);
+}
+
+.bottom {
+  padding-block: 2rem 3rem;
+  border-top: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+.bottom p {
+  margin: 0 0 0.5rem;
+  max-width: 60ch;
+}

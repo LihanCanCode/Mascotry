@@ -77,3 +77,16 @@ export function optionLabel(value: string): string {
   if (value.length === 0) return ''
   return value[0]?.toUpperCase() + value.slice(1)
 }
+
+/**
+ * A one-key config patch straight from a DOM control.
+ *
+ * The cast is deliberate and it is the only one: a `<select>` and an
+ * `<input type="color">` both hand back a plain string, and the single place
+ * that decides whether a string is a legal config value is `normaliseConfig`,
+ * which the reducer runs on every patch and which reports what it rejected.
+ * Narrowing here as well would just be a second, weaker copy of that rule.
+ */
+export function patch(key: keyof StudioConfig, value: string | boolean): Partial<StudioConfig> {
+  return { [key]: value } as Partial<StudioConfig>
+}

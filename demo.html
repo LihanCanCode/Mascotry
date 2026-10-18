@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mossgate Allotments</title>
+    <meta
+      name="description"
+      content="Forty-two plots behind the old brickworks. Waiting list, notice board and the Saturday seed swap."
+    />
+  </head>
+  <body>
+    <a class="skip" href="#buddy">Skip to the plot buddy</a>
+
+    <header class="top">
+      <p class="mark">
+        <span class="mark-leaf" aria-hidden="true">❧</span>
+        Mossgate Allotments
+      </p>
+      <nav aria-label="Sections">
+        <a href="#buddy">Plot buddy</a>
+        <a href="#board">Notice board</a>
+        <a href="#plots">Plots</a>
+      </nav>
+      <button type="button" id="theme-toggle" class="quiet">Switch to dark</button>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Established 1927 &middot; Mossgate &amp; Fold Lane</p>
+          <h1>Forty-two plots behind the old brickworks.</h1>
+          <p class="lead">
+            Half a rod each, a standpipe at both ends, and more rhubarb than anyone knows what to do
+            with. The waiting list is open and currently runs to about nine months.
+          </p>
+          <p class="cta-row">
+            <a class="cta" href="#plots">Join the waiting list</a>
+            <a class="quiet" href="#board">Read the notice board</a>
+          </p>
+        </div>
+        <div class="hero-art">
+          <mascotry-mascot id="plot-buddy" label="Fennel" size="150"></mascotry-mascot>
+          <p class="hero-art-note">Your plot buddy. It watches the cursor — give it a poke.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="buddy" aria-labelledby="buddy-title">
+        <h2 id="buddy-title">Meet your plot buddy</h2>
+        <p class="panel-note">
+          Every new plot holder gets paired with one of the six. They turn up on your plot card, on the
+          shed noticeboard, and here in the corner of this page.
+        </p>
+
+        <fieldset class="buddy-controls">
+          <legend>Choose a buddy</legend>
+          <div class="buddy-options" id="buddy-picker"></div>
+        </fieldset>
+
+        <p class="buddy-role" id="buddy-role">Fennel. Knows where the compost heap is.</p>
+        <p class="buddy-status" id="buddy-status" role="status" aria-live="polite"></p>
+
+        <p class="field">
+          <label for="buddy-size">How big on the page: <span id="buddy-size-value">150px</span></label>
+          <input id="buddy-size" type="range" min="80" max="240" step="10" value="150" />
+        </p>
+
+        <p class="copy-row">
+          <button type="button" id="buddy-copy" class="quiet">Copy the embed code</button>
+          <span id="buddy-copy-result" role="status" aria-live="polite" class="copy-result"></span>
+        </p>
+
+        <p class="credit">
+          Our buddies were drawn with <a href="/index.html">Mascotry</a>, which is free and runs entirely
+          in your browser. No artwork was bought and none was borrowed.
+        </p>
+      </section>
+
+      <section class="panel" id="board" aria-labelledby="board-title">
+        <h2 id="board-title">Notice board</h2>
+        <ul class="board">
+          <li>
+            <p class="board-when">Sat 25 Apr, 9am</p>
+            <h3>Seed swap in the big shed</h3>
+            <p>Bring what you saved, take what you need. Rosa is labelling everything this year, so please
+              write on your envelopes.</p>
+          </li>
+          <li>
+            <p class="board-when">Sun 3 May, all day</p>
+            <h3>Standpipe repairs, Fold Lane end</h3>
+            <p>Water off between the pear trees and plot 28. The Mossgate tap stays on.</p>
+          </li>
+          <li>
+            <p class="board-when">Ongoing</p>
+            <h3>Bonfires: after 6pm only</h3>
+            <p>And not at all if the washing is out on Fold Lane. It has been raised at every meeting
+              since 1994.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel" id="plots" aria-labelledby="plots-title">
+        <h2 id="plots-title">What is free</h2>
+        <table class="plots">
+          <caption>Plot availability, updated by hand each Monday</caption>
+          <thead>
+            <tr><th scope="col">Plot</th><th scope="col">Size</th><th scope="col">State</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">7</th><td>Half rod</td><td>Free now</td></tr>
+            <tr><th scope="row">19</th><td>Half rod</td><td>Free now, needs clearing</td></tr>
+            <tr><th scope="row">22</th><td>Full rod</td><td>Held for the Patels</td></tr>
+            <tr><th scope="row">31</th><td>Half rod</td><td>Free from June</td></tr>
+          </tbody>
+        </table>
+        <p class="panel-note">
+          To put your name down, speak to anyone in a green hat on a Saturday morning, or leave a note in
+          the tin by the gate.
+        </p>
+      </section>
+    </main>
+
+    <footer class="bottom">
+      <p>Mossgate &amp; Fold Lane Allotment Association. A made-up place, used here to show a real mascot
+        doing a real job.</p>
+      <p><a href="/index.html">Make your own at Mascotry</a></p>
+    </footer>
+
+    <script type="module" src="/src/demo/main.ts"></script>
+  </body>
+</html>
