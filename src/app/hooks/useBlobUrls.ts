@@ -7,6 +7,11 @@ import { useEffect, useState } from 'react'
  * revoked, and this app re-renders two multi-megabyte sheets on every tweak of
  * a slider. So the old pair is revoked as soon as a new pair arrives, and again
  * on unmount.
+ *
+ * `pair` is compared by identity, so it must be a value that only changes when
+ * the sheets really do — the app passes it straight off the reducer state. A
+ * pair built in the render body would be a new object every time and the URLs
+ * would be rebuilt forever.
  */
 export interface BlobPair {
   readonly directions: Blob

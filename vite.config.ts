@@ -18,6 +18,7 @@ export default defineConfig({
         '**/*.test.ts',
         '**/*.test.tsx',
         'src/studio/testCanvas.ts',
+        'src/app/testDom.ts',
         'src/app/main.tsx',
         'src/app/render/render.worker.ts',
       ],
