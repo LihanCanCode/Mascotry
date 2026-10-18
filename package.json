@@ -12,7 +12,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:shots": "playwright test e2e/looks.spec.ts"
   },
   "dependencies": {
     "react": "^19.0.0",

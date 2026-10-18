@@ -14,7 +14,7 @@
 
     <header class="top">
       <p class="mark">
-        <span class="mark-leaf" aria-hidden="true">❧</span>
+        <span class="mark-leaf" aria-hidden="true"></span>
         Mossgate Allotments
       </p>
       <nav aria-label="Sections">
@@ -52,23 +52,32 @@
           shed noticeboard, and here in the corner of this page.
         </p>
 
-        <fieldset class="buddy-controls">
-          <legend>Choose a buddy</legend>
-          <div class="buddy-options" id="buddy-picker"></div>
-        </fieldset>
+        <div class="buddy-grid">
+          <div>
+            <fieldset class="buddy-controls">
+              <legend>Choose a buddy</legend>
+              <div class="buddy-options" id="buddy-picker"></div>
+            </fieldset>
 
-        <p class="buddy-role" id="buddy-role">Fennel. Knows where the compost heap is.</p>
-        <p class="buddy-status" id="buddy-status" role="status" aria-live="polite"></p>
+            <p class="buddy-role" id="buddy-role">Fennel. Knows where the compost heap is.</p>
+            <p class="buddy-status" id="buddy-status" role="status" aria-live="polite"></p>
 
-        <p class="field">
-          <label for="buddy-size">How big on the page: <span id="buddy-size-value">150px</span></label>
-          <input id="buddy-size" type="range" min="80" max="240" step="10" value="150" />
-        </p>
+            <p class="field">
+              <label for="buddy-size">How big on the page: <span id="buddy-size-value">150px</span></label>
+              <input id="buddy-size" type="range" min="80" max="240" step="10" value="150" />
+            </p>
+          </div>
 
-        <p class="copy-row">
-          <button type="button" id="buddy-copy" class="quiet">Copy the embed code</button>
-          <span id="buddy-copy-result" role="status" aria-live="polite" class="copy-result"></span>
-        </p>
+          <div class="buddy-code">
+            <h3>What is on our page</h3>
+            <p class="buddy-code-note">The two lines below are the ones running in the corner of this page.</p>
+            <pre id="buddy-code" tabindex="0"></pre>
+            <p class="copy-row">
+              <button type="button" id="buddy-copy" class="quiet">Copy the embed code</button>
+              <span id="buddy-copy-result" role="status" aria-live="polite" class="copy-result"></span>
+            </p>
+          </div>
+        </div>
 
         <p class="credit">
           Our buddies were drawn with <a href="/index.html">Mascotry</a>, which is free and runs entirely

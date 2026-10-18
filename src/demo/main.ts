@@ -47,6 +47,7 @@ const sizeValue = must<HTMLElement>('#buddy-size-value')
 const roleText = must<HTMLElement>('#buddy-role')
 const copyButton = must<HTMLButtonElement>('#buddy-copy')
 const copyResult = must<HTMLElement>('#buddy-copy-result')
+const codeBlock = must<HTMLElement>('#buddy-code')
 
 let currentId = DEMO_CAST[0]?.id ?? 'fox'
 
@@ -90,11 +91,17 @@ async function choose(id: string): Promise<void> {
     mascot.setAttribute('reactions', urls.reactions)
     status.textContent = ''
     mascot.classList.add('is-ready')
+    showSnippet()
   } catch (error: unknown) {
     status.textContent = error instanceof Error
       ? `The mascot could not be drawn: ${error.message}`
       : 'The mascot could not be drawn.'
   }
+}
+
+/** Keep the shown code in step with what is actually running on the page. */
+function showSnippet(): void {
+  codeBlock.textContent = currentSnippet()
 }
 
 function currentSnippet(): string {
@@ -111,6 +118,7 @@ sizeInput.addEventListener('input', () => {
   const size = sizeInput.value
   mascot.setAttribute('size', size)
   sizeValue.textContent = `${size}px`
+  showSnippet()
 })
 
 copyButton.addEventListener('click', () => {
@@ -129,4 +137,5 @@ watchTheme(must<HTMLButtonElement>('#theme-toggle'))
 buildPicker()
 sizeValue.textContent = `${sizeInput.value}px`
 mascot.setAttribute('size', sizeInput.value)
+showSnippet()
 void choose(currentId)

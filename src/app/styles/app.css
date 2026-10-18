@@ -258,7 +258,10 @@ main > *,
 }
 
 .status {
-  margin: 0;
+  /* Not the margin shorthand: it would undo the auto inline margin that centres
+     every direct child of main. */
+  margin-block: 0;
+  margin-inline: auto;
   padding-block: var(--s-1);
   min-height: 1.5em;
   font-size: var(--t-sm);
@@ -287,7 +290,9 @@ main > *,
   display: grid;
   justify-items: center;
   gap: var(--s-1);
-  padding: var(--s-5) var(--s-2) var(--s-3);
+  /* The bottom strip is kept clear for the picked marker, so choosing a card
+     never covers its tag and never changes the grid's row heights. */
+  padding: var(--s-5) var(--s-2) 2rem;
   background: var(--sheet);
   border: var(--hair) solid var(--rule);
   border-radius: var(--r-sm);
@@ -347,7 +352,7 @@ main > *,
 
 .card[aria-checked='true'] {
   border: var(--stroke) solid var(--line);
-  padding: calc(var(--s-5) - 1px) calc(var(--s-2) - 1px) calc(var(--s-3) - 1px);
+  padding: calc(var(--s-5) - 1px) calc(var(--s-2) - 1px) calc(2rem - 1px);
 }
 
 /* Marked by a word as well as a colour, so the choice is never only green. */
@@ -462,10 +467,15 @@ main > *,
   max-width: 100%;
 }
 
+/* Hidden from view but still a real radio: focusable, announced, and reached by
+   the arrow keys. Zero opacity alone would leave it sitting over the layout. */
 .segment input {
   position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .segment label {
@@ -558,6 +568,9 @@ main > *,
 .stage {
   display: grid;
   place-items: center;
+  /* Wide enough for the largest preview and no wider: a full-width field of
+     checkerboard around a 160px mascot reads as an empty page, not a stage. */
+  max-width: 24rem;
   padding: var(--s-5);
   margin-bottom: var(--s-3);
   border: var(--stroke) solid var(--line);

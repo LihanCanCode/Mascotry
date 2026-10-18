@@ -117,8 +117,15 @@ main > *,
   font-weight: 600;
 }
 
+/* A leaf, drawn rather than typed: a dingbat glyph is at the mercy of whatever
+   font the reader happens to have. */
 .mark-leaf {
-  color: var(--leaf);
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  background: var(--leaf);
+  border-radius: 0 100% 0 100%;
+  rotate: -20deg;
 }
 
 .top nav {
@@ -294,10 +301,15 @@ mascotry-mascot.is-ready {
   gap: 0.5rem;
 }
 
+/* Hidden from view but still a real radio: focusable, announced, and reached by
+   the arrow keys. Zero opacity alone would leave it sitting over the layout. */
 .buddy-option input {
   position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .buddy-option label {
@@ -418,4 +430,43 @@ mascotry-mascot.is-ready {
 .bottom p {
   margin: 0 0 0.5rem;
   max-width: 60ch;
+}
+
+/*
+  At a wide width the picker alone leaves half the panel empty, and the most
+  honest thing to put in that space is the markup this very page is running.
+*/
+.buddy-grid {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  align-items: start;
+}
+
+@media (min-width: 52rem) {
+  .buddy-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.buddy-code h3 {
+  margin-top: 0;
+}
+
+.buddy-code-note {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+#buddy-code {
+  margin: 0 0 0.75rem;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  background: var(--sunk);
+  border: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
