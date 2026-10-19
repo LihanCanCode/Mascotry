@@ -1,8 +1,15 @@
-// Headwear: cap, beanie (thick cuff + fluffy pom-pom), antenna, hijab (simple headscarf).
+/**
+ * Headwear. This module owns the pieces built on the cap dome — cap, beanie, antenna, hijab — and
+ * dispatches the rest to the hats, the gear and the hood, each of which is its own module because
+ * a hat is a whole small drawing and fifteen of them in one file is a file nobody can read.
+ */
 import { TAU, clamp, ellipse, ink, smooth, unionInk } from '../draw'
 import { occlude, shadedInk } from '../shade'
 import type { Build, Ctx, Pt, Rig, SpherePt } from '../types'
 import { L_TEMPLE, R_TEMPLE, arcPts } from './hairGeometry'
+import { drawGear, gearShadowBuild, isGear } from './headwearGear'
+import { drawHat, hatShadowBuild, isHat } from './headwearHats'
+import { drawHoodBack, drawHoodCastShadow, drawHoodFront } from './hood'
 
 const HIJAB_WINDOW: readonly SpherePt[] = [
   [0, 1.02], [0.55, 0.96], [1.0, 0.72], [1.3, 0.25], [1.32, -0.3], [1.12, -0.8], [0.62, -1.12], [0, -1.24],
@@ -40,13 +47,23 @@ function hijabBuild(R: Rig): Build {
 /** The region of the face the headwear shades (cast shadow on the forehead). */
 export function drawHeadwearCastShadow(ctx: Ctx, R: Rig): void {
   const hw = R.cfg.headwear
+  const k = Math.min(1, R.k || 1)
+  if (hw === 'hood') { drawHoodCastShadow(ctx, R); return }
   if (hw === 'hijab') {
     ctx.save(); ctx.strokeStyle = R.pal.skinDeep; ctx.globalAlpha = 0.4; ctx.lineWidth = 20; ctx.lineJoin = 'round'
     ctx.beginPath(); smooth(ctx, R.pts(HIJAB_WINDOW, 1.0, true)); ctx.stroke(); ctx.restore()
     return
   }
+  if (isHat(hw)) {
+    occlude(ctx, hatShadowBuild(R), { color: R.pal.skinDeep, alpha: 0.6 * k, dx: 0, dy: 19, steps: 5 })
+    return
+  }
+  const gear = isGear(hw) ? gearShadowBuild(R) : null
+  if (gear) {
+    occlude(ctx, gear, { color: R.pal.skinDeep, alpha: 0.55 * k, dx: 0, dy: 18, steps: 5 })
+    return
+  }
   if (hw !== 'cap' && hw !== 'beanie') return
-  const k = Math.min(1, R.k || 1)
   occlude(ctx, domeBuild(R), { color: R.pal.skinDeep, alpha: 0.62 * k, dx: 0, dy: 17, steps: 5 })
   // A brim throws its own shadow further down the forehead than the band it is attached to.
   if (hw === 'cap') occlude(ctx, brimBuild(R), { color: R.pal.skinDeep, alpha: 0.5 * k, dx: 0, dy: 20, steps: 4 })
@@ -54,6 +71,7 @@ export function drawHeadwearCastShadow(ctx: Ctx, R: Rig): void {
 
 export function drawHeadwearBack(ctx: Ctx, R: Rig): void {
   const { cfg, pal } = R
+  if (cfg.headwear === 'hood') { drawHoodBack(ctx, R); return }
   if (cfg.headwear !== 'antenna') return
   const P = R.proj(0, 1.5, 1.0)
   const top = { x: P.x + R.dx * 8, y: P.y - 58 }
@@ -190,7 +208,10 @@ function drawHijab(ctx: Ctx, R: Rig): void {
 
 export function drawHeadwearFront(ctx: Ctx, R: Rig): void {
   const hw = R.cfg.headwear
+  if (hw === 'hood') { drawHoodFront(ctx, R); return }
   if (hw === 'hijab') { drawHijab(ctx, R); return }
+  if (isHat(hw)) { drawHat(ctx, R); return }
+  if (isGear(hw)) { drawGear(ctx, R); return }
   if (hw !== 'cap' && hw !== 'beanie') return
   drawDomeBody(ctx, R)
   if (hw === 'beanie') { drawBeanieCuff(ctx, R); drawPomPom(ctx, R) } else drawCapBrim(ctx, R)

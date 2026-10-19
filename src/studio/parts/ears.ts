@@ -93,8 +93,9 @@ function drawSideEar(ctx: Ctx, R: Rig, side: number): void {
 }
 
 const sideEarInFront = (R: Rig, side: number): boolean => R.proj(side * 1.5, -0.06, 1.1).z > 0.3
-/** A hijab covers human ears entirely. */
-const earsHidden = (R: Rig): boolean => R.cfg.headwear === 'hijab' && R.cfg.ears === 'human'
+/** A wrapped head covers human ears entirely. */
+const COVERS_EARS: readonly string[] = ['hijab', 'hood', 'grilledHelmet']
+const earsHidden = (R: Rig): boolean => COVERS_EARS.includes(R.cfg.headwear) && R.cfg.ears === 'human'
 
 /** Animal ears sit on the skull and drop a shadow at their roots. Call with the head clip active. */
 export function drawEarShadow(ctx: Ctx, R: Rig): void {

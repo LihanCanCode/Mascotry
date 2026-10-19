@@ -172,8 +172,8 @@ describe('mascotry-mascot: attributes', () => {
 
   it('renames itself when the label changes', () => {
     const { host, button } = mount({ label: 'Pip' })
-    host.setAttribute('label', 'Mei')
-    expect(button.getAttribute('aria-label')).toBe('Poke the Mei')
+    host.setAttribute('label', 'Otter')
+    expect(button.getAttribute('aria-label')).toBe('Poke the Otter')
   })
 })
 

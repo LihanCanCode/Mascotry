@@ -8,13 +8,13 @@ Four browsable groups, then the studio. Someone arriving with a site to decorate
 should find their character by what it *is*, not by a name we made up, so every
 entry is a plain noun: Fox, Doctor, Cricketer.
 
-| Group | What it is for | Count |
-|---|---|---|
-| **Animals** | The headline. Cute creatures, the most popular thing anyone wants. | 26 |
-| **Professions** | Pick your job. The obvious choice for a personal site or portfolio. | 24 |
-| **Sports** | Pick your game. | 12 |
-| **People** | Neutral faces, the starting point for making one that looks like you. | 8 |
-| **Robots and objects** | For products and tools rather than people. | 9 |
+| Group | What it is for | Planned | Built |
+|---|---|---|---|
+| **Animals** | The headline. Cute creatures, the most popular thing anyone wants. | 26 | 12 |
+| **Professions** | Pick your job. The obvious choice for a personal site or portfolio. | 24 | 24 |
+| **Sports** | Pick your game. | 12 | 12 |
+| **People** | Neutral faces, the starting point for making one that looks like you. | 8 | 8 |
+| **Robots and objects** | For products and tools rather than people. | 9 | 1 |
 
 **Build your own** sits alongside them rather than inside them: start from any
 character above, or from nothing, and change the face, colours and accessories.
@@ -30,34 +30,43 @@ altogether: a common noun belongs to nobody.
 
 ---
 
-## Animals (26)
+## Animals (26, 12 built)
 
-Fox · Bear · Cat · Dog · Bunny · Panda · Red panda · Wolf · Koala ·
-Squirrel · Hamster · Otter · Mouse · Hedgehog · Raccoon · Sloth · Tiger ·
+**Built:** Fox · Bear · Cat · Bunny · Panda · Red panda · Wolf · Koala ·
+Squirrel · Hamster · Otter · Mouse
+
+**Waiting on a new part:** Dog · Hedgehog · Raccoon · Sloth · Tiger ·
 Deer · Pig · Owl · Penguin · Chick · Duck · Frog · Sheep · Bee
 
-## Professions (24)
+Of the twelve built, four — koala, hamster, otter and mouse — lean on the bear
+ear and read as colour variants of it rather than as themselves. They are the
+proof of the costing below: an animal whose whole identity is its ears cannot be
+bought with colour.
+
+## Professions (24, all built)
 
 Farmer · Builder · Doctor · Nurse · Engineer · Hacker · Chef · Barista ·
 Teacher · Scientist · Mechanic · Firefighter · Pilot · Postal worker ·
 Artist · Musician · Gamer · Librarian · Vet · Welder · Gardener ·
 Astronaut · Detective · Baker
 
-## Sports (12)
+## Sports (12, all built)
 
 Footballer · Cricketer · Basketballer · Tennis player · Runner · Boxer ·
 Swimmer · Cyclist · Skater · Climber · Goalkeeper · Umpire
 
-## People (8)
+## People (8, all built)
 
 Eight neutral faces covering a range of skin tones, hair types and features,
 each a good starting point for the studio. Listed by look, since they exist to
 be changed: Curly · Bun · Buzz · Bob · Ponytail · Beard · Hijab · Headscarf
 
-## Robots and objects (9)
+## Robots and objects (9, 1 built)
 
-Robot · Clockwork · Drone · Television · Radio · Toaster · Rocket ·
-Lantern · Cube
+**Built:** Robot
+
+**Waiting on a second head architecture:** Clockwork · Drone · Television ·
+Radio · Toaster · Rocket · Lantern · Cube
 
 ---
 
@@ -66,7 +75,7 @@ Lantern · Cube
 The groups above are how it looks to a visitor. This is the order to build in,
 because the parts are the cost and a name is free.
 
-### Ready now — config only
+### Built — config only
 Fox, Bear, Cat, Bunny, Panda, Red panda, Wolf, Koala, Squirrel, Hamster,
 Otter, Mouse, the eight People, and Robot. The rig already has the ears,
 muzzle, cheek ruff, eye patch, hair, glasses, facial hair and headwear these
@@ -86,15 +95,25 @@ need.
 | Wool crown | Sheep |
 | Wide mouth | Frog |
 
-### Two new slots, which carry almost every profession and sport
+### Two new slots, which carry almost every profession and sport — built
 
 | New slot | Unlocks |
 |---|---|
 | **Neck accessory**, over the collar | stethoscope · apron · tie · lanyard · scarf · medal |
 | **Side accessory**, at ear level | headphones · headset · ear defenders |
 
-Plus new headwear: hood, toque, hard hat, straw hat, beret, visor, headband,
-grilled helmet, bubble helmet, surgical cap.
+Both shipped. The neck accessory lives in the pose-free body layer, so it cannot
+disturb the identical torso; the side accessory tracks the head like the ears,
+and its one asymmetric piece, the headset boom, is clamped clear of the body band.
+
+New headwear, all shipped: hood, toque, hard hat, straw hat, beret, visor,
+headband, grilled helmet, bubble helmet, surgical cap.
+
+A brim turned out to be the interesting one. A flat disc seen head-on projects
+to a line, so the first straw hat drew a stick through the character's head. The
+near half of the disc is now pushed down and the far half up, by an amount that
+fades as the head pitches and the rotation opens the ellipse honestly — the same
+cheat the cap brim already used, generalised.
 
 This is why the professions and sports are cheaper than they look. Almost none
 of them change the face. A footballer is a shirt colour, a stripe and a
@@ -127,10 +146,13 @@ fixed face: every one of them ships as a config a visitor can immediately change
 
 ## Order of work
 
-1. Finish the human geometry (beard, hair texture, cap brim, eye variety) —
-   in progress, and it gates most of the professions and sports.
-2. Ship the config-only characters, so the gallery fills at the new quality.
-3. The neck and side accessory slots, then the new headwear: this is what turns
-   on the professions and the sports in bulk.
-4. The animal parts, best value first: beak, then snout, then markings.
+1. ~~Finish the human geometry (beard, hair texture, cap brim, eye variety).~~
+   Done. The beard was the last of it: it had been lifted so far clear of the
+   hair that it read as grey fleece, and now sits a few points above it.
+2. ~~Ship the config-only characters.~~ Done — twelve animals, eight people.
+3. ~~The neck and side accessory slots, then the new headwear.~~ Done, and they
+   did carry the professions and the sports in bulk: all 36 of them are configs.
+4. **Next:** the animal parts, best value first: beak, then snout, then markings.
+   This is what gets the animal group from twelve to twenty-six, and it is also
+   what rescues the four that currently read as recoloured bears.
 5. Objects, only if they earn their place.

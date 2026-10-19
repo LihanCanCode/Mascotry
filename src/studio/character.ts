@@ -12,6 +12,7 @@ import { drawHairBack, drawHairCastShadow, drawHairFront } from './parts/hair'
 import { drawHeadwearBack, drawHeadwearCastShadow, drawHeadwearFront } from './parts/headwear'
 import { drawMouth } from './parts/mouth'
 import { drawMuzzlePads, drawNose, drawWhiskers } from './parts/muzzle'
+import { drawSideAccessory } from './parts/sidewear'
 import { drawSymbol } from './parts/symbols'
 
 /** Things painted on the face skin, clipped to the head outline. */
@@ -54,5 +55,6 @@ export function drawCharacter(ctx: Ctx, cfg: StudioConfig, pose: Pose, bodyLayer
   drawEarsFront(ctx, R)
   drawFace(ctx, R)
   drawHairFront(ctx, R); drawHeadwearFront(ctx, R)
+  drawSideAccessory(ctx, R)
   drawSymbol(ctx, cfg, R.ex.symbol)
 }

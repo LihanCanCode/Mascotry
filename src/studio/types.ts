@@ -22,7 +22,14 @@ export const EYE_PATCHES = ['none', 'oval'] as const
 export const HAIR_STYLES = ['none', 'messy', 'bob', 'buzz', 'bun', 'ponytail', 'curly'] as const
 export const GLASSES = ['none', 'round', 'square'] as const
 export const FACIAL_HAIRS = ['none', 'stubble', 'moustache', 'beard'] as const
-export const HEADWEARS = ['none', 'cap', 'beanie', 'antenna', 'hijab'] as const
+export const HEADWEARS = [
+  'none', 'cap', 'beanie', 'antenna', 'hijab', 'hood', 'toque', 'hardHat', 'strawHat', 'beret',
+  'visor', 'headband', 'grilledHelmet', 'bubbleHelmet', 'surgicalCap',
+] as const
+/** Worn over the collar. Lives on the body, so it never takes a pose. */
+export const NECK_ACCESSORIES = ['none', 'stethoscope', 'apron', 'tie', 'lanyard', 'scarf', 'medal'] as const
+/** Worn at ear level. Tracks the head like the ears do. */
+export const SIDE_ACCESSORIES = ['none', 'headphones', 'headset', 'earDefenders'] as const
 export const NECKLINES = ['crew', 'v', 'boat', 'turtle', 'collar', 'scarf'] as const
 export const SHIRT_DETAILS = ['none', 'stripe', 'badge'] as const
 export const EYE_SIZES = ['small', 'medium', 'large'] as const
@@ -40,6 +47,8 @@ export type HairStyle = (typeof HAIR_STYLES)[number]
 export type GlassesStyle = (typeof GLASSES)[number]
 export type FacialHair = (typeof FACIAL_HAIRS)[number]
 export type Headwear = (typeof HEADWEARS)[number]
+export type NeckAccessory = (typeof NECK_ACCESSORIES)[number]
+export type SideAccessory = (typeof SIDE_ACCESSORIES)[number]
 export type Neckline = (typeof NECKLINES)[number]
 export type ShirtDetail = (typeof SHIRT_DETAILS)[number]
 export type EyeSize = (typeof EYE_SIZES)[number]
@@ -80,6 +89,10 @@ export interface StudioConfig {
   readonly blushColor: string
   readonly headwear: Headwear
   readonly headwearColor: string
+  readonly neckAccessory: NeckAccessory
+  readonly neckAccessoryColor: string
+  readonly sideAccessory: SideAccessory
+  readonly sideAccessoryColor: string
   readonly shirt: string
   readonly neckline: Neckline
   readonly shirtDetail: ShirtDetail

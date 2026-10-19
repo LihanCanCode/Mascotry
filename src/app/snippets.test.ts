@@ -48,7 +48,7 @@ function onlyKnownEntities(value: string): boolean {
 describe('fileSlug', () => {
   it('lowercases and hyphenates a readable name', () => {
     expect(fileSlug('Pip & Co')).toBe('pip-co')
-    expect(fileSlug('Mei')).toBe('mei')
+    expect(fileSlug('Bun')).toBe('bun')
   })
 
   it('strips path separators and traversal, so the name cannot steer a save', () => {

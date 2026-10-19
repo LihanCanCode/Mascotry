@@ -1,7 +1,7 @@
 // Config defaults + validation. `normaliseConfig` is the only way configs enter the renderer.
 import {
   BROW_STYLES, CHEEK_FLUFFS, EAR_TYPES, EYE_PATCHES, EYE_SIZES, FACE_SHAPES, FACIAL_HAIRS, GLASSES, HAIR_STYLES,
-  HEADWEARS, LASHES, LIDS, MATERIALS, NECKLINES, SHIRT_DETAILS,
+  HEADWEARS, LASHES, LIDS, MATERIALS, NECK_ACCESSORIES, NECKLINES, SHIRT_DETAILS, SIDE_ACCESSORIES,
 } from './types'
 import type { CheekFluff, EarType, StudioConfig } from './types'
 
@@ -12,19 +12,21 @@ export const DEFAULT_CONFIG: StudioConfig = Object.freeze({
   eyeColor: '#5b3a2a', eyeSize: 'medium', lashes: 'none', lids: 'normal', brows: 'soft',
   glasses: 'none', glassesColor: '#2a1c2e', blush: true, blushColor: '#ff8aa8',
   headwear: 'none', headwearColor: '#e8505b',
+  neckAccessory: 'none', neckAccessoryColor: '#eef1f6', sideAccessory: 'none', sideAccessoryColor: '#3b3f4e',
   shirt: '#5b7bd5', neckline: 'crew', shirtDetail: 'none', accent: '#ffcf4a', outline: '#2b1d33',
   material: 'auto', shading: 1, rimLight: 1, lineTint: 1, edgeTexture: 1,
 })
 
 const COLOUR_KEYS = [
   'skin', 'muzzle', 'earInner', 'earTip', 'noseColor', 'patchColor', 'hairColor', 'eyeColor', 'glassesColor',
-  'blushColor', 'headwearColor', 'shirt', 'accent', 'outline',
+  'blushColor', 'headwearColor', 'neckAccessoryColor', 'sideAccessoryColor', 'shirt', 'accent', 'outline',
 ] as const
 
 const ENUMS: Readonly<Record<string, readonly string[]>> = {
   faceShape: FACE_SHAPES, ears: EAR_TYPES, cheekFluff: CHEEK_FLUFFS, eyePatch: EYE_PATCHES, hairStyle: HAIR_STYLES,
   facialHair: FACIAL_HAIRS, eyeSize: EYE_SIZES, lashes: LASHES, lids: LIDS, brows: BROW_STYLES, glasses: GLASSES,
   headwear: HEADWEARS, neckline: NECKLINES, shirtDetail: SHIRT_DETAILS, material: MATERIALS,
+  neckAccessory: NECK_ACCESSORIES, sideAccessory: SIDE_ACCESSORIES,
 }
 
 const HEX = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i

@@ -7,6 +7,7 @@
  * keeps insertion order, and re-reading an entry moves it to the back, which
  * gives least-recently-used eviction without a second data structure.
  */
+import { STUDIO_PRESETS } from '../../studio'
 import type { Pixels } from '../../image/types'
 
 export interface ThumbCache {
@@ -17,7 +18,12 @@ export interface ThumbCache {
   readonly size: number
 }
 
-export const THUMB_LIMIT = 48
+/**
+ * Big enough for the whole roster plus room to grow. A limit under the number of cards would
+ * evict a thumbnail the grid is still showing and redraw it on the next scroll, which is the
+ * one thing the cache exists to prevent.
+ */
+export const THUMB_LIMIT = STUDIO_PRESETS.length + 16
 
 export function createThumbCache(limit: number = THUMB_LIMIT): ThumbCache {
   if (!Number.isInteger(limit) || limit < 1) {

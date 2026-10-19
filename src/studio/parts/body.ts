@@ -1,6 +1,7 @@
 // Body: neck, torso, neckline, shirt detail. Takes no pose, so it is identical in all cells.
 import { ellipse, ink, roundRect, starPath } from '../draw'
 import { occlude, rgba, rimLight, shadedInk } from '../shade'
+import { drawNeckAccessory } from './neckwear'
 import type { Build, Ctx, Material, Palette, StudioConfig } from '../types'
 
 /** Rows at/below this (512 design space) are never touched by head parts: the "body identity" band. */
@@ -100,8 +101,8 @@ function drawNeckline(ctx: Ctx, pal: Palette, cfg: StudioConfig): void {
   }
 }
 
-/** Hijab cape draped over the shoulders: part of the static body so the layer stays pose-free. */
-function drawHijabDrape(ctx: Ctx, pal: Palette, k: number): void {
+/** Cloth draped over the shoulders by a hijab or a hood: static, so the layer stays pose-free. */
+function drawShoulderDrape(ctx: Ctx, pal: Palette, k: number): void {
   const cape: Build = (c) => {
     c.moveTo(196, 346); c.quadraticCurveTo(256, 330, 316, 346)
     c.bezierCurveTo(338, 356, 348, 380, 346, 410)
@@ -131,6 +132,7 @@ export function drawBody(ctx: Ctx, pal: Palette, cfg: StudioConfig, mat: Materia
   })
   drawCollarShadow(ctx, pal, cfg.shading)
   if (cfg.shirtDetail === 'badge') drawBadge(ctx, pal)
-  if (cfg.headwear === 'hijab') drawHijabDrape(ctx, pal, cfg.shading)
+  if (cfg.headwear === 'hijab') drawShoulderDrape(ctx, pal, cfg.shading)
   else drawNeckline(ctx, pal, cfg)
+  drawNeckAccessory(ctx, pal, cfg)
 }

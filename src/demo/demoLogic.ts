@@ -12,7 +12,7 @@ export interface CastMember {
 }
 
 /**
- * Six of the studio's characters, cast as plot buddies. Not all fourteen: a
+ * Six of the studio's characters, cast as plot buddies. Not the whole roster: a
  * picker is a choice, and six is a choice a person can actually make.
  */
 export const DEMO_CAST: readonly CastMember[] = Object.freeze([
@@ -20,8 +20,8 @@ export const DEMO_CAST: readonly CastMember[] = Object.freeze([
   { id: 'bunny', name: 'Clover', role: 'Minds the seedling frames' },
   { id: 'bear', name: 'Barley', role: 'Carries the water cans' },
   { id: 'cat', name: 'Nettle', role: 'Supervises, mostly' },
-  { id: 'zara', name: 'Rosa', role: 'Runs the Saturday seed swap' },
-  { id: 'otto', name: 'Walter', role: 'Has grown onions since 1974' },
+  { id: 'curly', name: 'Rosa', role: 'Runs the Saturday seed swap' },
+  { id: 'gardener', name: 'Walter', role: 'Has grown onions since 1974' },
 ])
 
 export function castMember(id: string): CastMember | undefined {

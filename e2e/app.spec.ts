@@ -50,11 +50,12 @@ test('the picked character can be reached and changed with the arrow keys alone'
   await page.goto('/')
   await waitForPreview(page)
 
+  // Anchored: the roster now also holds a Beard, and a bare /Bear/ matches both cards.
   await page.getByRole('radio', { name: /Fox/ }).focus()
   await page.keyboard.press('ArrowRight')
 
-  await expect(page.getByRole('radio', { name: /Bear/ })).toHaveAttribute('aria-checked', 'true')
-  await expect(page.getByRole('radio', { name: /Bear/ })).toBeFocused()
+  await expect(page.getByRole('radio', { name: /^Bear,/ })).toHaveAttribute('aria-checked', 'true')
+  await expect(page.getByRole('radio', { name: /^Bear,/ })).toBeFocused()
 })
 
 test('the mascot looks towards the pointer and reacts to a poke', async ({ page }) => {
