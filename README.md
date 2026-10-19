@@ -1,118 +1,126 @@
+<div align="center">
+
 # Mascotry
 
-Design a friendly mascot, drop it on your page, and watch it follow the reader's
-cursor. Poke it and it reacts.
+**Draw a mascot that watches the reader.**
 
-Everything runs in the browser. No account, no server, no API key, no cost — and
-no requests to anywhere but the page itself, which the end-to-end suite checks
-rather than assumes.
+A friendly character for the top of your page. It follows the cursor, and it reacts when you poke it.
 
-## Three ways to start one
+<img src="docs/images/hero.png" alt="Eight Mascotry characters: a fox, a hooded hacker, a cat, a doctor, a panda, a footballer, a bunny and a chef" width="100%">
 
-Equal doors into the same studio. Whatever you start, you can finish any other
-way, because all three produce the same small config.
+Free, no account, no API key, nothing uploaded. Every character is drawn by code in your own browser.
 
-- **Pick one** — 57 characters as a grid of thumbnails, each drawn as you scroll.
-- **Describe it** — type "curly dark hair, round glasses, short beard, green
-  jumper, brown skin" and get it. A deterministic phrase table, not a model:
-  it matches the longest phrase it knows, understands "no glasses", and tells
-  you which of your words it did not recognise instead of guessing at them.
-- **From a photo** — drop in a head-and-shoulders photo and get a cartoon that
-  shares your colouring and features. The file is decoded by the browser's own
-  image decoder and read off a canvas in this tab; it is not uploaded and not
-  kept, which the end-to-end suite checks by failing on any off-origin request.
-  Every field comes with a confidence, only confident fields are applied, and
-  each one can be overridden. It wants one face filling much of the frame
-  against a plain background: skin is found by its colour, and warm wood, beige
-  walls and sand are the same colour as skin, so a photo of a room gets an
-  honest "no face found" rather than a brown blob. Eye colour is not read at
-  all: without facial landmarks there is nothing to measure.
+</div>
 
-## How it works
+---
 
-A character is described by a small config: face shape, ears, hair, eyes,
-glasses, facial hair, headwear and colours. From that config the studio draws
-two sprite sheets, each a 3x3 grid:
+## What it is
 
-- **Poses** — nine head directions, from up-left to down-right.
-- **Moods** — nine expressions, from a blink to a dizzy spin.
+Pick a character, change its face, and leave with two sprite sheets and the handful of lines that make them follow the cursor. Drop those on any site — React, plain HTML, anything.
 
-Each form is painted with a radial light model rather than a flat fill: a key light off the
-upper left gives a broad lit side, a soft terminator and a warm bounce in the shadow, with
-contact shadows where parts meet and a thin rim on the lit edge. Outlines are tinted dark
-versions of the colour they enclose, so an orange fox gets a warm brown line and a grey cat a
-cool one. Metal takes a harder specular and a cooler bounce than fur. The `shading`, `rimLight`,
-`lineTint`, `edgeTexture` and `material` config keys turn each of those down or off.
+There is no service behind this. The drawing happens in your tab, the files are yours, and nothing is sent anywhere.
 
-The torso is drawn once and reused across all eighteen cells, so the body never
-shifts while the head turns. At runtime the component measures where the pointer
-sits relative to the mascot, picks a cell, and moves the background. Two image
-loads, no per-frame layout.
+## How a character is built
+
+Every mascot is two 3×3 sprite sheets. The first holds nine head directions:
+
+<img src="docs/images/sheet-directions.png" alt="A 3x3 sheet of a fox looking up-left, up, up-right, left, straight ahead, right, down-left, down and down-right" width="420">
+
+The second holds nine moods, shown when someone pokes it:
+
+<img src="docs/images/moods.png" alt="A bear blinking, in love, delighted, surprised, starstruck, bashful, sleepy, dizzy and grinning" width="100%">
+
+At runtime the component measures where the pointer sits relative to the mascot and shifts the background to the matching cell. Two image loads, no layout work per frame.
+
+The torso is drawn once and reused across all eighteen cells, so the body never shifts while the head turns.
+
+## Three ways in
+
+**Pick one** of the fifty-seven characters.
+
+**Describe it.** Type `curly dark hair, round glasses, short beard, green jumper` and get that character. It is a plain keyword parser over 344 phrases — no model, no network — and it tells you which of your words it did not understand.
+
+**From a photo.** Drop in a head-and-shoulders photograph and it reads your skin tone, hair colour and style, beard, glasses and shirt colour, each with a confidence. The photo is read in the tab and never uploaded. It wants a plain background: warm wood and beige walls are the same colour as skin, and when it cannot find a face it says so rather than guessing.
+
+All three land in the same controls, so a character begun one way can be finished another.
+
+## The characters
+
+### Animals
+<img src="docs/images/animals.png" alt="Fox, bear, cat, bunny, panda, red panda, wolf, koala, squirrel, hamster, otter and mouse" width="100%">
+
+### Professions
+<img src="docs/images/professions.png" alt="Twenty-four profession characters including a hacker, farmer, builder, doctor, nurse, engineer, chef and astronaut" width="100%">
+
+### Sports
+<img src="docs/images/sports.png" alt="Footballer, cricketer, basketballer, tennis player, runner, boxer, swimmer, cyclist, skater, climber, goalkeeper and umpire" width="100%">
+
+### People
+<img src="docs/images/people.png" alt="Eight neutral faces with different hair, skin tones and features" width="100%">
+
+These eight are starting points rather than finished characters — the doorway into the studio.
 
 ## Use it
-
-Two runtime files ship, both built from the same sources. Take whichever fits.
-
-### Any page
-
-```html
-<script type="module" src="/mascotry-mascot.js"></script>
-
-<mascotry-mascot
-  directions="/pip-directions.webp"
-  reactions="/pip-reactions.webp"
-  size="128"
-  label="Pip"></mascotry-mascot>
-```
-
-A custom element: shadow DOM, no dependencies, no build step, and it works under
-a strict Content-Security-Policy because it never writes stylesheet text.
-
-| Attribute | Meaning |
-|---|---|
-| `directions` | The 3x3 poses sheet |
-| `reactions` | The 3x3 moods sheet |
-| `size` | Edge in pixels (default 128) |
-| `label` | What a screen reader calls it |
-| `commit` / `release` | How far the pointer travels before the head turns, and before it straightens |
-
-### React
 
 ```tsx
 import { Mascot } from 'mascotry'
 
-<Mascot directions="/pip-directions.webp" reactions="/pip-reactions.webp" label="Pip" />
+<Mascot directions="/pip-directions.webp" reactions="/pip-moods.webp" label="Pip" />
 ```
 
-## Develop
+Not using React? The same thing ships as a custom element:
+
+```html
+<script type="module" src="/mascotry-mascot.js"></script>
+<mascotry-mascot
+  directions="/pip-directions.webp"
+  reactions="/pip-moods.webp"
+  size="140"
+  label="Pip"
+></mascotry-mascot>
+```
+
+Both respect `prefers-reduced-motion`, stay quiet on touch devices where there is no cursor to follow, and work under a strict Content Security Policy.
+
+## Run it
 
 ```bash
 pnpm install
-pnpm dev          # http://localhost:5173, plus /demo.html
-pnpm test         # unit tests
-pnpm test:cov     # with coverage
+pnpm dev          # the studio
+pnpm test         # 1173 unit and integration tests
 pnpm typecheck
 pnpm build        # static site in dist/
-pnpm test:e2e     # builds, serves, and drives a real browser
-pnpm shots out/x  # contact sheets and zooms of every preset, for looking at the art
+pnpm e2e          # browser tests
 ```
+
+`pnpm dev` also serves a demo page at `/demo.html`: a made-up allotment association's website with a mascot on its shelf, built from the same files this repo ships.
 
 Deploy `dist/` to any static host.
 
-## Layout
+## How it is put together
 
 | Path | What |
 |---|---|
-| `src/studio` | The drawing rig: parts, poses, colour handling, sheet rendering |
-| `src/runtime` | The `<Mascot>` component, the `<mascotry-mascot>` element, and the pointer and poke logic both share |
-| `src/image` | The pixel buffer type shared by the drawing and reading code |
-| `src/describe` | Words to a character: the phrase vocabulary and the parser |
-| `src/photo` | A photo to a character: face finding, colour and feature reading, and the decode |
-| `src/app` | The web app: pick a character, tune it, preview it, export it |
-| `src/demo` | A made-up allotment association's site, running the real shipped element |
-| `e2e` | Playwright: no console errors, no outside requests, real downloads, screenshots at three widths in both themes |
+| `src/studio` | The drawing rig: the 2.5D face projection, the parts, the lighting, the presets |
+| `src/runtime` | The `<Mascot>` component, the custom element, and the pointer and poke logic |
+| `src/describe` | Words to a character |
+| `src/photo` | A photograph to a character |
+| `src/app` | The studio itself |
+| `docs/roster.md` | What is built, what is planned, and what each character costs to draw |
+
+### A note on the drawing
+
+Characters are not images with the colours swapped. A config describes the face — ears, muzzle, hair, glasses, facial hair, headwear, accessories, colours — and the rig projects the features onto a sphere to turn the head, lights every form from the upper left, derives each outline from the colour it surrounds, and breaks up fur and hair along the silhouette. That is why a character can be recoloured and restyled after you pick it, and why a new one costs a few lines rather than a drawing.
+
+## Known limits
+
+- **Koala, hamster, otter and mouse** look like recoloured bear cubs. The rig has one round ear, and they want their own.
+- **Owl, penguin, dog, tiger, deer and the objects** are planned but unbuilt: they need a beak, a snout, droopy ears, markings and a second head shape. `docs/roster.md` lists what each costs.
+- **The photo route refuses ordinary snapshots** taken against warm backgrounds. It is honest about it, but a sliding-window face search would fix it.
+- Eye colour, glasses shape and a moustache-versus-beard distinction are never guessed from a photo, because none of them can be measured honestly without facial landmarks.
 
 ## Licence
 
-MIT, © 2026 LihanCanCode. All code and artwork in this repository is original
-work written for this project; it carries no third-party code or assets.
+MIT, © 2026 LihanCanCode.
+
+Every line of code and every pixel of artwork here is original work written for this project. There is no third-party code and there are no borrowed assets.
