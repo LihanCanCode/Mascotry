@@ -1,6 +1,6 @@
 # Character roster
 
-The plan for what Mascotry ships in its gallery. Grouped by how much new drawing
+The plan for what Mascotry ships in its gallery. Ninety-six characters. Grouped by how much new drawing
 code each character needs, because that, not the naming, is the real work.
 
 Today the rig knows: four face shapes; ears in human, cat, bear, fox, bunny and
@@ -76,6 +76,54 @@ Knight (visored helm) · Astronaut (bubble helmet) · Ranger (brimmed hat)
 
 ---
 
+## Wave 3b — jobs and sports (34)
+
+Far cheaper than they look. Almost none of these change the face: they are a
+hat, something at the neck, a shirt colour and a shirt detail. The rig already
+has necklines and a stripe detail, so a football shirt is mostly configuration.
+
+Two new part slots unlock nearly the whole group:
+
+| New slot | Unlocks |
+|---|---|
+| **Neck accessory** (sits over the collar) | stethoscope · apron strap · tie · lanyard · scarf · medal |
+| **Side accessory** (at ear level) | headphones · headset · ear defenders · earrings |
+
+Plus a handful of new headwear: hood, toque, hard hat, straw hat, beret,
+visor, headband, grilled helmet, bubble helmet, surgical cap.
+
+### Jobs (22)
+Farmer (straw hat, dungarees) · Builder (hard hat, hi-vis stripe) ·
+Doctor (scrubs, stethoscope) · Nurse (cap) · Engineer (goggles, badge) ·
+Hacker (hood, glasses, screen glow) · Chef (toque) · Barista (cap, apron) ·
+Teacher (glasses, collar) · Scientist (goggles, lab collar) ·
+Mechanic (cap, overalls) · Firefighter (helmet) · Pilot (cap, aviators) ·
+Postal worker (cap, satchel strap) · Artist (beret) ·
+Musician (headphones) · Gamer (headset) · Librarian (glasses, cardigan) ·
+Vet (scrubs, stethoscope) · Chemist (goggles) · Welder (visor) ·
+Gardener (straw hat, gloves)
+
+The **hacker** is the one to build first. A hood plus a cool screen glow from
+below is exactly the lighting the new rim-light work is adding, so it shows the
+shading off rather than fighting it.
+
+### Sports (12)
+Footballer (shirt stripe, headband) · Cricketer (grilled helmet, whites) ·
+Basketballer (vest, headband) · Tennis player (visor, wristband) ·
+Runner (vest, number) · Boxer (headguard) · Swimmer (cap, goggles) ·
+Cyclist (helmet, sunglasses) · Skater (beanie) · Climber (helmet) ·
+Goalkeeper (gloves, long sleeves) · Umpire (hat, badge)
+
+### A limit worth stating plainly
+
+These are **roles, not people**. A footballer in a red shirt is ours to draw.
+A particular living footballer is not: a recognisable likeness of a real person
+carries personality and publicity rights quite apart from copyright, and club
+and national kits are trademarked. So the roster has "Cricketer", never a named
+player, and shirts get invented colours and no crest.
+
+---
+
 ## Wave 4 — a different head altogether (8)
 
 These are not faces with parts bolted on; the head itself is a box, a dome or a
@@ -111,5 +159,6 @@ Three ways to close it, and they are not exclusive:
 1. Enrich the rig (shading, texture, outline weight).
 2. Wave 1, so the gallery has 28 characters at the new quality.
 3. Wave 2 parts, best value first: beak, then snout, then markings.
-4. Wave 3 headwear.
+4. Wave 3 headwear, then Wave 3b, starting with the neck and side accessory
+   slots since those two unlock the most.
 5. Wave 4 only if objects earn their place.
