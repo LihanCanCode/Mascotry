@@ -37,6 +37,31 @@ export function furRipple(cfg: StudioConfig, isFur: boolean): (t: number) => num
 }
 
 /**
+ * Harmonic orders of the beard ripple. A beard breaks into a handful of clumps rather than
+ * thousands of hairs, so these are coarser than the fur orders; all even, which keeps the ripple
+ * mirror-symmetric about the vertical axis.
+ */
+const BEARD_ORDERS: readonly number[] = [4, 8, 12]
+const BEARD_AMP = 0.16
+
+/**
+ * Radial ripple for the beard's outer edge, as a fraction of the head radius. It fades to nothing
+ * at the lowest point of the chin, which keeps the beard clear of the body band below it.
+ */
+export function beardRipple(cfg: StudioConfig): (t: number) => number {
+  if (cfg.edgeTexture <= 0) return () => 0
+  const rnd = rng(edgeSeed(cfg) ^ 0x5bf03635)
+  const gains = BEARD_ORDERS.map(() => rnd() - 0.5)
+  const scale = (BEARD_AMP * cfg.edgeTexture) / BEARD_ORDERS.length
+  return (t: number) => {
+    let v = 0
+    for (let i = 0; i < BEARD_ORDERS.length; i++) v += (gains[i] ?? 0) * Math.cos((BEARD_ORDERS[i] ?? 0) * t)
+    const chin = Math.max(0, Math.sin(t))
+    return v * scale * (1 - chin ** 4)
+  }
+}
+
+/**
  * A palindromic ripple for a hair cap's silhouette arc, so hair edges are not perfect ellipses.
  * Mirrored about the middle sample, which is what keeps the centred cell symmetric.
  */

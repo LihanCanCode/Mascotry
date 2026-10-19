@@ -1,7 +1,7 @@
 // Headwear: cap, beanie (thick cuff + fluffy pom-pom), antenna, hijab (simple headscarf).
-import { TAU, ellipse, ink, smooth, unionInk } from '../draw'
+import { TAU, clamp, ellipse, ink, smooth, unionInk } from '../draw'
 import { occlude, shadedInk } from '../shade'
-import type { Build, Ctx, Rig, SpherePt } from '../types'
+import type { Build, Ctx, Pt, Rig, SpherePt } from '../types'
 import { L_TEMPLE, R_TEMPLE, arcPts } from './hairGeometry'
 
 const HIJAB_WINDOW: readonly SpherePt[] = [
@@ -16,10 +16,13 @@ const edgeList = (phi: number, wobble = 0): SpherePt[] => {
 }
 
 /** Dome outline for cap / beanie: silhouette arc over the top, hairline-parallel lower edge. */
+/** Latitude the cap's band sits at; high enough to leave the brim a band of forehead to sit on. */
+const CAP_BAND = 0.78
+
 function domeBuild(R: Rig): Build {
   const beanie = R.cfg.headwear === 'beanie'
   const outer = arcPts(R, L_TEMPLE - 0.08, R_TEMPLE + 0.08, 16, beanie ? 1.13 : 1.1)
-  const lower = R.pts(edgeList(beanie ? 0.98 : 0.7, beanie ? 0 : 0.04), 1.04, true)
+  const lower = R.pts(edgeList(beanie ? 0.98 : CAP_BAND, beanie ? 0 : 0.04), 1.04, true)
   const all = [...outer, ...lower.slice().reverse()]
   return (c) => smooth(c, all)
 }
@@ -43,7 +46,10 @@ export function drawHeadwearCastShadow(ctx: Ctx, R: Rig): void {
     return
   }
   if (hw !== 'cap' && hw !== 'beanie') return
-  occlude(ctx, domeBuild(R), { color: R.pal.skinDeep, alpha: 0.62 * Math.min(1, R.k || 1), dx: 0, dy: 17, steps: 5 })
+  const k = Math.min(1, R.k || 1)
+  occlude(ctx, domeBuild(R), { color: R.pal.skinDeep, alpha: 0.62 * k, dx: 0, dy: 17, steps: 5 })
+  // A brim throws its own shadow further down the forehead than the band it is attached to.
+  if (hw === 'cap') occlude(ctx, brimBuild(R), { color: R.pal.skinDeep, alpha: 0.5 * k, dx: 0, dy: 20, steps: 4 })
 }
 
 export function drawHeadwearBack(ctx: Ctx, R: Rig): void {
@@ -66,7 +72,7 @@ function strokeSpherePath(ctx: Ctx, R: Rig, list: readonly SpherePt[], depth: nu
 
 function drawDomeBody(ctx: Ctx, R: Rig): void {
   const { pal } = R
-  const bandPhi = R.cfg.headwear === 'cap' ? 0.7 : 0.98
+  const bandPhi = R.cfg.headwear === 'cap' ? CAP_BAND : 0.98
   shadedInk(ctx, domeBuild(R), {
     base: pal.hat, shade: pal.hatShade, line: pal.lineHat, w: 7, off: [-8, -9],
     form: { mat: 'cloth', k: R.k, spread: 1.2, rim: R.cfg.rimLight * 0.9 },
@@ -115,15 +121,53 @@ function drawBeanieCuff(ctx: Ctx, R: Rig): void {
   })
 }
 
+/** How far the brim's front edge is pushed down the forehead when the head faces the viewer. */
+const BRIM_DROP = 20
+const BRIM_SPAN = 1.12
+
+/**
+ * A brim is a flat plate pointing straight at the viewer, and an orthographic projection collapses
+ * that to a hairline — which is exactly what the cap used to look like from the front. So the
+ * front-facing part of its depth is drawn instead of projected: the outer edge is pushed down the
+ * forehead by an amount that fades away as the head turns and the projection takes over.
+ */
+function brimEdges(R: Rig): { readonly inner: Pt[]; readonly outer: Pt[] } {
+  const front = clamp(R.proj(0, 0, 1).z, 0, 1)
+  const n = 10
+  const inner: Pt[] = [], outer: Pt[] = []
+  for (let i = 0; i <= n; i++) {
+    const t = -BRIM_SPAN + (2 * BRIM_SPAN * i) / n
+    const u = t / BRIM_SPAN
+    inner.push(R.proj(t, CAP_BAND, 1.04, true))
+    const o = R.proj(t, 0.5, 1.2, true)
+    outer.push({ x: o.x, y: o.y + BRIM_DROP * front * (1 - 0.55 * u * u) })
+  }
+  return { inner, outer }
+}
+
+const brimBuild = (R: Rig): Build => {
+  const { inner, outer } = brimEdges(R)
+  return (c) => smooth(c, [...inner, ...outer.slice().reverse()])
+}
+
 function drawCapBrim(ctx: Ctx, R: Rig): void {
   const { pal } = R
-  const ptsAt = (n: number, from: number, step: number, phi: number, d: number) =>
-    R.pts(Array.from({ length: n }, (_, i): SpherePt => [from + i * step, phi]), d, false)
-  const inner = ptsAt(9, -0.95, 0.2375, 0.7, 1.03)
-  const outer = ptsAt(9, 0.95, -0.2375, 0.42, 1.3)
-  shadedInk(ctx, (c) => smooth(c, [...inner, ...outer]), {
+  const { inner, outer } = brimEdges(R)
+  const seam = outer.map((p, i) => ({ x: (p.x * 5 + (inner[i]?.x ?? p.x)) / 6, y: (p.y * 5 + (inner[i]?.y ?? p.y)) / 6 }))
+  shadedInk(ctx, brimBuild(R), {
     base: pal.hat, shade: pal.hatShade, line: pal.lineHat, w: 7, off: [-3, -4],
-    form: { mat: 'cloth', k: R.k, spread: 1.7 },
+    form: { mat: 'cloth', k: R.k, spread: 1.7, rim: R.cfg.rimLight * 0.7 },
+    hi: (c) => {
+      // We see the top of the plate lit and the sliver of its underside dark; a stitched seam
+      // running parallel to the front edge is what names the shape as a brim.
+      c.lineCap = 'round'; c.lineJoin = 'round'
+      c.strokeStyle = pal.hatShade; c.globalAlpha = 0.9; c.lineWidth = 8
+      c.beginPath(); smooth(c, outer, false); c.stroke()
+      c.strokeStyle = pal.hatHi; c.globalAlpha = 0.55; c.lineWidth = 6
+      c.beginPath(); smooth(c, inner.slice(1, -1), false); c.stroke()
+      c.strokeStyle = pal.lineHat; c.globalAlpha = 0.35; c.lineWidth = 3
+      c.beginPath(); smooth(c, seam, false); c.stroke(); c.globalAlpha = 1
+    },
   })
   const P = R.proj(0, 1.52, 1.1)
   R.at(ctx, P, 0, () => ink(ctx, (c) => ellipse(c, 0, 0, 12, 7), { fill: pal.hatShade, line: pal.lineHat, w: 4.5, swell: 0.3 }), Math.max(P.sx, 0.6))

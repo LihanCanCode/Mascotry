@@ -3,13 +3,20 @@ import { ellipse, hiOf, ink, mix, shadeOf, starPath } from '../draw'
 import type { Ctx, EyeKind, EyeSize, Rig } from '../types'
 
 export const EYE_T = 0.46
-const SIZE_K: Readonly<Record<EyeSize, number>> = { small: 0.8, medium: 1, large: 1.14 }
+const SIZE_K: Readonly<Record<EyeSize, number>> = { small: 0.76, medium: 1, large: 1.16 }
 const LID_COVER = { normal: 0, heavy: 0.2, sleepy: 0.36 } as const
+/**
+ * Saucer eyes are what makes an animal read as a cuddly animal, and what makes every person read
+ * as the same wide-eyed child in a different wig. People therefore start smaller; the robot keeps
+ * the big lenses, which are the point of it.
+ */
+const PERSON_K = 0.82
 
 export interface EyeGeom { readonly rx: number; readonly ry: number; readonly phi: number; readonly k: number }
 
 export function eyeGeom(R: Rig): EyeGeom {
-  const k = SIZE_K[R.cfg.eyeSize]
+  const person = !R.animal && R.cfg.ears !== 'bolt'
+  const k = SIZE_K[R.cfg.eyeSize] * (person ? PERSON_K : 1)
   return { rx: 29 * k, ry: 37 * k, phi: R.animal ? 0.1 : 0.04, k }
 }
 
@@ -22,8 +29,8 @@ function drawLashes(ctx: Ctx, R: Rig, g: EyeGeom, side: number): void {
   const { lashes } = R.cfg
   if (lashes === 'none') return
   const angles = lashes === 'long' ? [0.3, 0.62, 0.95] : [0.34, 0.7]
-  const len = lashes === 'long' ? 15 : 10
-  stroked(ctx, R.pal.line, 5, () => {
+  const len = (lashes === 'long' ? 15 : 10) * g.k
+  stroked(ctx, R.pal.line, 5 * g.k, () => {
     for (const a of angles) {
       const bx = side * g.rx * Math.cos(a), by = -g.ry * Math.sin(a)
       const nx = (side * Math.cos(a)) / g.rx, ny = -Math.sin(a) / g.ry
@@ -53,14 +60,13 @@ function drawIris(ctx: Ctx, R: Rig, rx: number, ry: number, ir: number, gaze: re
   ctx.fillStyle = '#1b1220'; ctx.beginPath(); ellipse(ctx, gx, 1 + gy, rx * ir * 0.5, ry * ir * 0.52); ctx.fill()
 }
 
-function drawCatchlights(ctx: Ctx, rx: number, ry: number, ir: number, gaze: readonly [number, number], shine: boolean): void {
+function drawCatchlights(ctx: Ctx, k: number, ry: number, ir: number, gaze: readonly [number, number], shine: boolean): void {
   const [gx, gy] = gaze
-  const s = shine ? 1.25 : 1
+  const s = (shine ? 1.25 : 1) * k
   ctx.fillStyle = '#fff'
-  ctx.beginPath(); ellipse(ctx, gx - ir * 9, gy - ry * 0.36 * ir, 9.5 * s, 10.5 * s, -0.3); ctx.fill()
-  ctx.beginPath(); ellipse(ctx, gx + ir * 10, gy + ry * 0.36 * ir, 4.8 * s, 4.8 * s); ctx.fill()
-  if (shine) { ctx.beginPath(); ellipse(ctx, gx + ir * 14, gy - ry * 0.14, 3, 3); ctx.fill() }
-  void rx
+  ctx.beginPath(); ellipse(ctx, gx - ir * 9 * k, gy - ry * 0.36 * ir, 9.5 * s, 10.5 * s, -0.3); ctx.fill()
+  ctx.beginPath(); ellipse(ctx, gx + ir * 10 * k, gy + ry * 0.36 * ir, 4.8 * s, 4.8 * s); ctx.fill()
+  if (shine) { ctx.beginPath(); ellipse(ctx, gx + ir * 14 * k, gy - ry * 0.14, 3 * k, 3 * k); ctx.fill() }
 }
 
 function drawLid(ctx: Ctx, R: Rig, rx: number, ry: number, cover: number): void {
@@ -85,28 +91,35 @@ function drawOpenEye(ctx: Ctx, R: Rig, kind: EyeKind, g: EyeGeom, shine: boolean
     ctx.save(); ctx.translate(0, 2); ctx.beginPath(); starPath(ctx, 21, 0.46); ctx.fillStyle = '#ffe45c'
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.fill(); ctx.stroke(); ctx.restore()
   }
-  drawCatchlights(ctx, rx, ry, ir, gaze, shine)
+  drawCatchlights(ctx, g.k, ry, ir, gaze, shine)
   const cover = kind === 'shy' ? 0.1 : LID_COVER[R.cfg.lids]
   if (cover > 0 && !wide) drawLid(ctx, R, rx, ry, cover)
   ctx.restore()
   if (cover === 0 || wide) {
-    stroked(ctx, pal.line, 9, () => ctx.ellipse(0, 0, rx + 2, ry + 2, 0, Math.PI * 1.08, Math.PI * 1.92))
+    stroked(ctx, pal.line, 9 * g.k, () => ctx.ellipse(0, 0, rx + 2, ry + 2, 0, Math.PI * 1.08, Math.PI * 1.92))
   }
 }
 
-function drawEye(ctx: Ctx, R: Rig, kind: EyeKind, side: number, g: EyeGeom, shine: boolean): void {
-  const line = R.pal.line
+/** The shut and squinting eyes are drawn at full size and scaled, so every kind matches the open one. */
+function drawShutEye(ctx: Ctx, line: string, kind: EyeKind, side: number): void {
   if (kind === 'happy' || kind === 'wink') {
     stroked(ctx, line, 9, () => { ctx.moveTo(-25, 10); ctx.quadraticCurveTo(0, -26, 25, 10) })
-  } else if (kind === 'closed') {
-    stroked(ctx, line, 8, () => { ctx.moveTo(-26, -6); ctx.quadraticCurveTo(0, 18, 26, -6) })
-    stroked(ctx, line, 5, () => { ctx.moveTo(-25, -5); ctx.lineTo(-33, -11); ctx.moveTo(25, -5); ctx.lineTo(33, -11) })
-  } else if (kind === 'spiral') {
-    drawSpiral(ctx, line, side)
-  } else {
-    drawOpenEye(ctx, R, kind, g, shine)
-    drawLashes(ctx, R, g, side)
+    return
   }
+  if (kind === 'spiral') { drawSpiral(ctx, line, side); return }
+  stroked(ctx, line, 8, () => { ctx.moveTo(-26, -6); ctx.quadraticCurveTo(0, 18, 26, -6) })
+  stroked(ctx, line, 5, () => { ctx.moveTo(-25, -5); ctx.lineTo(-33, -11); ctx.moveTo(25, -5); ctx.lineTo(33, -11) })
+}
+
+const SHUT: readonly EyeKind[] = ['happy', 'wink', 'closed', 'spiral']
+
+function drawEye(ctx: Ctx, R: Rig, kind: EyeKind, side: number, g: EyeGeom, shine: boolean): void {
+  if (SHUT.includes(kind)) {
+    ctx.save(); ctx.scale(g.k, g.k); drawShutEye(ctx, R.pal.line, kind, side); ctx.restore()
+    return
+  }
+  drawOpenEye(ctx, R, kind, g, shine)
+  drawLashes(ctx, R, g, side)
 }
 
 /** Both eyes, drawn at their sphere positions. */
@@ -128,10 +141,11 @@ const BROWS: Readonly<Record<string, { readonly w: number; readonly draw: BrowSh
   arched: { w: 8, draw: (c, l) => { c.moveTo(-19, 6); c.quadraticCurveTo(-6, -12 - l * 4, 2, -9 - l * 4); c.quadraticCurveTo(12, -7, 19, 7) } },
 }
 
-/** Brows sit lower under a cap or beanie so the hat band does not cover them. */
+/** Brows drop under headwear so the band does not cover them; a cap's brim reaches further down. */
 function browPhi(R: Rig, g: EyeGeom): number {
-  const hat = R.cfg.headwear === 'cap' || R.cfg.headwear === 'beanie'
-  return 0.6 + (g.k - 1) * 0.1 - (hat ? 0.12 : 0)
+  const hw = R.cfg.headwear
+  const drop = hw === 'cap' ? 0.26 : hw === 'beanie' ? 0.12 : 0
+  return 0.6 + (g.k - 1) * 0.16 - drop
 }
 
 export function drawBrows(ctx: Ctx, R: Rig): void {

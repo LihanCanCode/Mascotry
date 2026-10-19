@@ -7,8 +7,11 @@ import type { EyeGeom } from './eyes'
 
 const SIDES = [-1, 1] as const
 
-const lensShape = (c: Ctx, round: boolean): void =>
-  (round ? ellipse(c, 0, 0, 45, 45) : roundRect(c, -46, -40, 92, 80, 16))
+/** Lenses track the eye size, so a small-eyed face does not end up wearing goggles. */
+const lensK = (g: EyeGeom): number => 0.72 + 0.3 * g.k
+
+const lensShape = (c: Ctx, round: boolean, s: number): void =>
+  (round ? ellipse(c, 0, 0, 45 * s, 45 * s) : roundRect(c, -46 * s, -40 * s, 92 * s, 80 * s, 16 * s))
 
 /**
  * Inside the lens: a shadow falling from the top rim and a narrow glint. Both stay off the iris.
@@ -32,22 +35,23 @@ export function drawGlasses(ctx: Ctx, R: Rig, g: EyeGeom): void {
   if (cfg.glasses === 'none') return
   const frame = cfg.glassesColor
   const round = cfg.glasses === 'round'
+  const k = lensK(g)
   ctx.save(); ctx.beginPath(); R.head(ctx, 1.08); ctx.clip()
   const lenses = SIDES.map((s) => ({ s, P: R.proj(s * EYE_T, g.phi, 1.1) }))
   ctx.strokeStyle = frame; ctx.lineWidth = 6; ctx.lineCap = 'round'
   for (const { s, P } of lenses) {
     const e = R.proj(s * 1.5, 0.05, 1.04, true)
     const sx = Math.max(P.sx, 0.4)
-    ctx.beginPath(); ctx.moveTo(P.x + s * 46 * sx, P.y - 4); ctx.lineTo(e.x, e.y); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(P.x + s * 46 * k * sx, P.y - 4); ctx.lineTo(e.x, e.y); ctx.stroke()
   }
   const a = lenses[0], b = lenses[1]
   if (a && b) {
-    ctx.beginPath(); ctx.moveTo(a.P.x + 44 * Math.max(a.P.sx, 0.4), a.P.y - 8)
-    ctx.quadraticCurveTo((a.P.x + b.P.x) / 2, a.P.y - 18, b.P.x - 44 * Math.max(b.P.sx, 0.4), b.P.y - 8); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(a.P.x + 44 * k * Math.max(a.P.sx, 0.4), a.P.y - 8)
+    ctx.quadraticCurveTo((a.P.x + b.P.x) / 2, a.P.y - 18, b.P.x - 44 * k * Math.max(b.P.sx, 0.4), b.P.y - 8); ctx.stroke()
   }
   for (const { P } of lenses) {
     R.at(ctx, P, 0, () => {
-      const shape = (c: Ctx): void => lensShape(c, round)
+      const shape = (c: Ctx): void => lensShape(c, round, k)
       ink(ctx, shape, { fill: 'rgba(205,232,255,.26)', line: frame, w: 6.5, swell: 0.5 })
       drawLensSurface(ctx, R, shape)
     }, Math.max(P.sx, 0.4))

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { normaliseConfig } from '../config'
-import { edgeSeed, furRipple, hairWobble } from './edge'
+import { beardRipple, edgeSeed, furRipple, hairWobble } from './edge'
 
 const cfg = (over = {}) => normaliseConfig({ ears: 'fox', skin: '#f08a3c', ...over })
 const SAMPLES = Array.from({ length: 64 }, (_, i) => (i / 64) * Math.PI * 2)
@@ -36,6 +36,36 @@ describe('furRipple', () => {
   it('scales with the edgeTexture dial', () => {
     const one = furRipple(cfg(), true), half = furRipple(cfg({ edgeTexture: 0.5 }), true)
     for (const t of SAMPLES) expect(half(t)).toBeCloseTo(one(t) / 2, 10)
+  })
+})
+
+describe('beardRipple', () => {
+  const person = (over = {}) => normaliseConfig({ ears: 'human', facialHair: 'beard', ...over })
+  const JAW = Array.from({ length: 48 }, (_, i) => 0.3 + (i / 47) * (Math.PI - 0.6))
+
+  it('is symmetric about the vertical axis so the centred cell stays symmetric', () => {
+    const f = beardRipple(person())
+    for (const t of JAW) expect(f(Math.PI - t)).toBeCloseTo(f(t), 10)
+  })
+
+  it('is deterministic for the same config and differs for a different one', () => {
+    expect(JAW.map(beardRipple(person()))).toEqual(JAW.map(beardRipple(person())))
+    expect(JAW.map(beardRipple(person()))).not.toEqual(JAW.map(beardRipple(person({ faceShape: 'oval' }))))
+  })
+
+  it('fades to nothing at the chin, which is what keeps it clear of the body band', () => {
+    expect(beardRipple(person())(Math.PI / 2)).toBeCloseTo(0, 10)
+  })
+
+  it('stays small enough to clump an outline rather than deform it', () => {
+    const f = beardRipple(person())
+    for (const t of JAW) expect(Math.abs(f(t))).toBeLessThan(0.09)
+  })
+
+  it('scales with the edgeTexture dial and switches off at zero', () => {
+    const one = beardRipple(person()), half = beardRipple(person({ edgeTexture: 0.5 }))
+    for (const t of JAW) expect(half(t)).toBeCloseTo(one(t) / 2, 10)
+    expect(JAW.map(beardRipple(person({ edgeTexture: 0 })))).toEqual(JAW.map(() => 0))
   })
 })
 

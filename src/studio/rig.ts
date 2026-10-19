@@ -1,5 +1,5 @@
 // 2.5D rig: head silhouette per face shape, face-sphere projection, palette, pose tables.
-import { clamp, hiOf, inkOf, liftDark, shadeOf } from './draw'
+import { clamp, hiOf, inkOf, liftDark, shadeOf, tone } from './draw'
 import { furRipple } from './parts/edge'
 import { rimOf } from './shade'
 import type {
@@ -45,7 +45,9 @@ export function materialOf(c: StudioConfig): Material {
 
 export function makePalette(c: StudioConfig): Palette {
   const hair = liftDark(c.hairColor, 0.2)
-  const beard = c.facialHairColor ?? liftDark(c.hairColor, 0.23)
+  // A beard the same tone as the hair turns the whole head into one dark blob with eyes in it,
+  // so a derived beard is pulled clearly lighter and warmer than the hair it came from.
+  const beard = c.facialHairColor ?? tone(liftDark(c.hairColor, 0.24), { l: 0.15, s: -0.05, h: 12 })
   const lidFill = c.eyePatch === 'oval' ? c.patchColor : c.skin
   const mat = materialOf(c)
   const tint = c.lineTint

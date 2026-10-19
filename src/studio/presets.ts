@@ -43,7 +43,7 @@ export const STUDIO_PRESETS: readonly StudioPreset[] = Object.freeze([
   }),
   preset('sam', 'Sam', 'person', {
     faceShape: 'square', skin: '#d29a6c', hairStyle: 'messy', hairColor: '#17131c', facialHair: 'beard',
-    eyeColor: '#3b2a22', brows: 'bold', shirt: '#25252d', neckline: 'crew', accent: '#e8505b',
+    eyeColor: '#3b2a22', eyeSize: 'small', brows: 'bold', shirt: '#25252d', neckline: 'crew', accent: '#e8505b',
   }),
   preset('mei', 'Mei', 'person', {
     faceShape: 'heart', skin: '#f5d0b0', hairStyle: 'bun', hairColor: '#7a3b2a', glasses: 'round',
@@ -57,11 +57,12 @@ export const STUDIO_PRESETS: readonly StudioPreset[] = Object.freeze([
   }),
   preset('amina', 'Amina', 'person', {
     faceShape: 'oval', skin: '#d9a47a', hairStyle: 'none', headwear: 'hijab', headwearColor: '#3f8f9a',
-    hairColor: '#2b2230', eyeColor: '#4a2f22', lashes: 'soft', brows: 'arched', shirt: '#f1e6d3', accent: '#f3c969',
+    hairColor: '#2b2230', eyeColor: '#4a2f22', eyeSize: 'large', lashes: 'long', brows: 'arched', shirt: '#f1e6d3',
+    accent: '#f3c969',
   }),
   preset('leo', 'Leo', 'person', {
     faceShape: 'oval', skin: '#f1c4a0', hairStyle: 'ponytail', hairColor: '#b5522e', eyeColor: '#5a7aa0',
-    lids: 'heavy', brows: 'thin', shirt: '#2f7f86', neckline: 'crew', accent: '#ffcf4a',
+    eyeSize: 'small', lids: 'heavy', brows: 'thin', shirt: '#2f7f86', neckline: 'crew', accent: '#ffcf4a',
   }),
   preset('jonas', 'Jonas', 'person', {
     faceShape: 'square', skin: '#e8b894', hairStyle: 'buzz', hairColor: '#5a4636', facialHair: 'stubble',
@@ -71,11 +72,12 @@ export const STUDIO_PRESETS: readonly StudioPreset[] = Object.freeze([
   preset('noor', 'Noor', 'person', {
     faceShape: 'round', skin: '#5e3b2a', hairStyle: 'bob', hairColor: '#1d1520', headwear: 'beanie',
     headwearColor: '#d9453f', accent: '#fff0d0', eyeColor: '#3a2418', glasses: 'square', glassesColor: '#e8a23a',
-    lashes: 'soft', shirt: '#6a4fb8', neckline: 'turtle', blushColor: '#e07088',
+    eyeSize: 'large', lashes: 'soft', shirt: '#6a4fb8', neckline: 'turtle', blushColor: '#e07088',
   }),
   preset('otto', 'Otto', 'person', {
     faceShape: 'heart', skin: '#e9bf9d', hairStyle: 'none', hairColor: '#bdb5c4', facialHair: 'moustache',
     facialHairColor: '#d9d3de', glasses: 'round', glassesColor: '#6b4a2e', headwear: 'cap', headwearColor: '#5f6f8c',
-    eyeColor: '#5a4a3a', lids: 'heavy', brows: 'bold', shirt: '#b98a5a', neckline: 'collar', accent: '#f4ead8',
+    eyeColor: '#5a4a3a', eyeSize: 'small', lids: 'heavy', brows: 'bold', shirt: '#b98a5a',
+    neckline: 'collar', accent: '#f4ead8',
   }),
 ])
