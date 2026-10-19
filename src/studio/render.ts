@@ -1,7 +1,7 @@
 // Sheet / cell rendering on an injected canvas factory. DOM-free.
 import type { Pixels as RawImage } from '../image/types'
 import { drawCharacter } from './character'
-import { DESIGN, CELL_DEFAULT, DIRECTIONS, REACTIONS, makePalette } from './rig'
+import { DESIGN, CELL_DEFAULT, DIRECTIONS, REACTIONS, makePalette, materialOf } from './rig'
 import { normaliseConfig } from './config'
 import type { CanvasLike, Ctx, Pose, RenderOptions, SheetKind, StudioConfig } from './types'
 import { BODY_TOP, drawBody } from './parts/body'
@@ -38,7 +38,7 @@ function bodyLayer(cfg: StudioConfig, cell: number, opts: RenderOptions): Canvas
   const layer = opts.createCanvas(cell, cell)
   const ctx = context2d(layer)
   ctx.scale(cell / DESIGN, cell / DESIGN)
-  drawBody(ctx, makePalette(cfg), cfg)
+  drawBody(ctx, makePalette(cfg), cfg, materialOf(cfg))
   return layer
 }
 

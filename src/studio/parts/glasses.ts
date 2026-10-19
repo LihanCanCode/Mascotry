@@ -1,10 +1,31 @@
 // Glasses: round or square frames with temples, bridge and a simple lens glint.
 import { ellipse, ink, roundRect } from '../draw'
+import { rgba } from '../shade'
 import type { Ctx, Rig } from '../types'
 import { EYE_T } from './eyes'
 import type { EyeGeom } from './eyes'
 
 const SIDES = [-1, 1] as const
+
+const lensShape = (c: Ctx, round: boolean): void =>
+  (round ? ellipse(c, 0, 0, 45, 45) : roundRect(c, -46, -40, 92, 80, 16))
+
+/**
+ * Inside the lens: a shadow falling from the top rim and a narrow glint. Both stay off the iris.
+ * A lens-wide tint or a fat opaque streak would hide the eye, which is the one thing a pair of
+ * glasses must not do at this size.
+ */
+function drawLensSurface(ctx: Ctx, R: Rig, shape: (c: Ctx) => void): void {
+  ctx.save(); ctx.beginPath(); shape(ctx); ctx.clip()
+  const g = ctx.createLinearGradient(0, -46, 0, -8)
+  g.addColorStop(0, rgba(R.pal.skinDeep, 0.3 * Math.min(1, R.k)))
+  g.addColorStop(1, rgba(R.pal.skinDeep, 0))
+  ctx.fillStyle = g; ctx.fillRect(-50, -50, 100, 44)
+  ctx.strokeStyle = 'rgba(255,255,255,.42)'; ctx.lineCap = 'round'
+  ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(-29, -4); ctx.lineTo(-13, -30); ctx.stroke()
+  ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(-19, 13); ctx.lineTo(-12, 4); ctx.stroke()
+  ctx.restore()
+}
 
 export function drawGlasses(ctx: Ctx, R: Rig, g: EyeGeom): void {
   const { cfg } = R
@@ -26,13 +47,9 @@ export function drawGlasses(ctx: Ctx, R: Rig, g: EyeGeom): void {
   }
   for (const { P } of lenses) {
     R.at(ctx, P, 0, () => {
-      const shape = (c: Ctx): void => (round ? ellipse(c, 0, 0, 45, 45) : roundRect(c, -46, -40, 92, 80, 16))
-      ink(ctx, shape, { fill: 'rgba(205,232,255,.28)', line: frame, w: 6.5, swell: 0.5 })
-      ctx.save(); ctx.beginPath(); shape(ctx); ctx.clip()
-      ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineCap = 'round'
-      ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-28, -2); ctx.lineTo(-10, -30); ctx.stroke()
-      ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-18, 14); ctx.lineTo(-10, 4); ctx.stroke()
-      ctx.restore()
+      const shape = (c: Ctx): void => lensShape(c, round)
+      ink(ctx, shape, { fill: 'rgba(205,232,255,.26)', line: frame, w: 6.5, swell: 0.5 })
+      drawLensSurface(ctx, R, shape)
     }, Math.max(P.sx, 0.4))
   }
   ctx.restore()

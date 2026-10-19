@@ -1,7 +1,9 @@
 // 2.5D rig: head silhouette per face shape, face-sphere projection, palette, pose tables.
-import { clamp, hiOf, liftDark, shadeOf } from './draw'
+import { clamp, hiOf, inkOf, liftDark, shadeOf } from './draw'
+import { furRipple } from './parts/edge'
+import { rimOf } from './shade'
 import type {
-  Ctx, EarType, Expression, ExpressionName, FaceShape, Palette, Pose, ProjPt, Pt, Rig, SpherePt, StudioConfig,
+  Ctx, EarType, Expression, ExpressionName, FaceShape, Material, Palette, Pose, ProjPt, Pt, Rig, SpherePt, StudioConfig,
 } from './types'
 
 export const CELL_DEFAULT = 512
@@ -34,12 +36,25 @@ export const EXPRESSIONS: Readonly<Record<ExpressionName, Expression>> = {
 const ANIMAL_EARS: readonly EarType[] = ['cat', 'bear', 'fox', 'bunny']
 export const isAnimal = (c: StudioConfig): boolean => ANIMAL_EARS.includes(c.ears)
 
+/** Resolve the character's own surface: bolts read as metal, animal ears as fur. */
+export function materialOf(c: StudioConfig): Material {
+  if (c.material !== 'auto') return c.material
+  if (c.ears === 'bolt') return 'metal'
+  return isAnimal(c) ? 'fur' : 'skin'
+}
+
 export function makePalette(c: StudioConfig): Palette {
   const hair = liftDark(c.hairColor, 0.2)
   const beard = c.facialHairColor ?? liftDark(c.hairColor, 0.23)
   const lidFill = c.eyePatch === 'oval' ? c.patchColor : c.skin
+  const mat = materialOf(c)
+  const tint = c.lineTint
+  const nib = (fill: string): string => inkOf(fill, c.outline, tint)
   return {
     line: c.outline,
+    lineSkin: nib(c.skin), lineHair: nib(hair), lineShirt: nib(c.shirt), lineHat: nib(c.headwearColor),
+    lineAccent: nib(c.accent), lineMuzzle: nib(c.muzzle), lineBeard: nib(beard),
+    skinRim: rimOf(c.skin, mat), shirtRim: rimOf(c.shirt, 'cloth'),
     skin: c.skin, skinShade: shadeOf(c.skin), skinHi: hiOf(c.skin), skinDeep: shadeOf(c.skin, 2),
     hair, hairShade: shadeOf(hair), hairHi: hiOf(hair, 2.6),
     beard, beardShade: shadeOf(beard), beardHi: hiOf(beard, 2.4),
@@ -76,12 +91,13 @@ const SHAPES: Readonly<Record<FaceShape, ShapeSpec>> = {
 const signedPow = (v: number, e: number): number => Math.sign(v) * Math.abs(v) ** e
 
 /** Returns the unit-space silhouette point (x, y in -1..1) for a canvas angle t. */
-function unitSil(spec: ShapeSpec, t: number): Pt {
+function unitSil(spec: ShapeSpec, t: number, ripple: number): Pt {
   const co = Math.cos(t), si = Math.sin(t)
   const n = si > 0 ? spec.nBot : spec.nTop
   const py = signedPow(si, 2 / n)
   const lower = Math.max(0, py)
-  return { x: signedPow(co, 2 / n) * (1 - spec.taper * lower * lower), y: py }
+  const g = 1 + ripple
+  return { x: signedPow(co, 2 / n) * (1 - spec.taper * lower * lower) * g, y: py * g }
 }
 
 interface Rotation { readonly cYaw: number; readonly sYaw: number; readonly cp: number; readonly sp: number }
@@ -115,8 +131,9 @@ export function createRig(cfg: StudioConfig, pose: Pose): Rig {
   const rot: Rotation = { cYaw: Math.cos(yaw), sYaw: Math.sin(yaw), cp: Math.cos(pitch), sp: Math.sin(pitch) }
   const frame = { cx, cy, rx, ry }
 
+  const ripple = furRipple(cfg, materialOf(cfg) === 'fur')
   const sil = (t: number, s = 1, ox = 0, oy = 0): Pt => {
-    const u = unitSil(spec, t)
+    const u = unitSil(spec, t, ripple(t))
     return { x: cx + ox + rx * s * u.x, y: cy + oy + ry * s * u.y }
   }
   const head = (ctx: Ctx, s = 1, ox = 0, oy = 0): void => {
@@ -137,7 +154,7 @@ export function createRig(cfg: StudioConfig, pose: Pose): Rig {
     ctx.scale(sx, 1); fn(); ctx.restore()
   }
   return {
-    cfg, pal: makePalette(cfg), animal: isAnimal(cfg), dx, dy, cx, cy, rx, ry,
+    cfg, pal: makePalette(cfg), animal: isAnimal(cfg), mat: materialOf(cfg), k: cfg.shading, dx, dy, cx, cy, rx, ry,
     ex: EXPRESSIONS[pose.expr], sil, head, proj, pts, at,
   }
 }

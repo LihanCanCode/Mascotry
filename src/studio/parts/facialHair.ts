@@ -1,6 +1,7 @@
 // Facial hair: stubble (under the face features), jaw-following beard with a real mouth cut-out,
 // and an outlined moustache drawn over the nose/mouth gap.
-import { TAU, ellipse, mix, rng, shadedInk, smooth } from '../draw'
+import { TAU, ellipse, mix, rng, smooth } from '../draw'
+import { shadedInk } from '../shade'
 import type { Ctx, Pt, Rig, SpherePt } from '../types'
 
 export type FacialHairPhase = 'under' | 'over' | 'gap'
@@ -46,8 +47,12 @@ function drawBeard(ctx: Ctx, R: Rig): void {
     c.ellipse(M.x, M.y + 4, 30 * Math.max(M.sx, 0.5), 16, 0, 0, TAU)
   }
   shadedInk(ctx, build, {
-    base: pal.beard, shade: pal.beardShade, line: pal.line, w: 6, off: [-5, -7], rule: 'evenodd',
+    base: pal.beard, shade: pal.beardShade, line: pal.lineBeard, w: 6, off: [-5, -7], rule: 'evenodd',
+    form: { mat: 'cloth', k: R.k, spread: 1.25 },
     hi: (c) => {
+      // The cheek sits in front of the beard, so the beard darkens along its own inner edge.
+      c.strokeStyle = pal.line; c.globalAlpha = 0.3 * Math.min(1, R.k); c.lineWidth = 16; c.lineJoin = 'round'
+      c.beginPath(); smooth(c, inner, false); c.stroke()
       c.strokeStyle = pal.beardHi; c.lineWidth = 6; c.lineCap = 'round'; c.globalAlpha = 0.75
       for (const side of [-1, 1]) {
         const p = R.pts([[side * 1.25, -0.7], [side * 0.95, -1.05], [side * 0.5, -1.3]], 1.06, true)
@@ -65,7 +70,8 @@ function drawMoustache(ctx: Ctx, R: Rig): void {
     const p = R.pts(list, 1.1, false)
     if (p.reduce((s, q) => s + q.z, 0) / p.length < 0.2) continue
     shadedInk(ctx, (c) => smooth(c, p), {
-      base: pal.beard, shade: pal.beardShade, line: pal.line, w: 5.5, off: [-3, -4],
+      base: pal.beard, shade: pal.beardShade, line: pal.lineBeard, w: 5.5, off: [-3, -4],
+      form: { mat: 'cloth', k: R.k, spread: 1.6 },
       hi: (c) => {
         const a = p[3], b = p[2]
         if (!a || !b) return
@@ -83,7 +89,7 @@ function drawStubble(ctx: Ctx, R: Rig): void {
   ctx.fillStyle = mix(cfg.skin, pal.hair, 0.4); ctx.globalAlpha = 0.85
   ctx.beginPath(); smooth(ctx, [...top, ...bot]); ctx.fill(); ctx.globalAlpha = 1
   const rnd = rng(7)
-  ctx.fillStyle = pal.hairShade
+  ctx.fillStyle = mix(pal.hairShade, cfg.skin, 0.32)
   for (let i = 0; i < 120; i++) {
     const P = R.proj((rnd() * 2 - 1) * 1.45, -0.5 - rnd() * 0.95, 1.0)
     if (P.z < 0.12) continue

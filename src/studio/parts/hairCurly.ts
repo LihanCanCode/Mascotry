@@ -1,5 +1,8 @@
 // Curly / afro hair: a cloud of curls behind the head and a scalloped curly hairline in front.
 import { ellipse, smooth, unionInk } from '../draw'
+import { measure, merge } from '../bbox'
+
+import { formPaint } from '../shade'
 import type { Build, Ctx, Rig, SpherePt } from '../types'
 import { L_TEMPLE, R_TEMPLE, arcPts } from './hairGeometry'
 
@@ -39,7 +42,7 @@ export function curlyShadowBuilds(R: Rig): Build[] {
 }
 
 export function drawCurlyBack(ctx: Ctx, R: Rig): void {
-  unionInk(ctx, backBuilds(R), { fill: R.pal.hairShade, line: R.pal.line, w: 6 })
+  unionInk(ctx, backBuilds(R), { fill: R.pal.hairShade, line: R.pal.lineHair, w: 6 })
 }
 
 function drawCurlDetails(ctx: Ctx, R: Rig): void {
@@ -56,7 +59,9 @@ function drawCurlDetails(ctx: Ctx, R: Rig): void {
 
 export function drawCurlyFront(ctx: Ctx, R: Rig): void {
   const { pal } = R
-  unionInk(ctx, [capBuild(R), ...frontCircles(R).map((f) => f.build)], { fill: pal.hair, line: pal.line, w: 5 })
+  const shapes = [capBuild(R), ...frontCircles(R).map((f) => f.build)]
+  const box = shapes.map(measure).reduce(merge)
+  unionInk(ctx, shapes, { fill: formPaint(ctx, box, { base: pal.hair, mat: 'cloth', k: R.k, spread: 1.2 }), line: pal.lineHair, w: 5 })
   drawCurlDetails(ctx, R)
   // crown curls: a few arcs of light across the top
   ctx.strokeStyle = pal.hairHi; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.globalAlpha = 0.7

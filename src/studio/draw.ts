@@ -17,7 +17,7 @@ export function rgbToHex([r, g, b]: Rgb3): string {
   return `#${hx(r)}${hx(g)}${hx(b)}`
 }
 
-function rgbToHsl([r0, g0, b0]: Rgb3): Rgb3 {
+export function rgbToHsl([r0, g0, b0]: Rgb3): Rgb3 {
   const r = r0 / 255, g = g0 / 255, b = b0 / 255
   const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2
   if (mx === mn) return [0, 0, l]
@@ -42,6 +42,10 @@ function hslToRgb([h0, s, l]: Rgb3): Rgb3 {
   return [f(h + 1 / 3), f(h), f(h - 1 / 3)]
 }
 
+/** Build a hex colour straight from HSL; h in degrees, s and l in 0..1. */
+export const hslHex = (h: number, s: number, l: number): string =>
+  rgbToHex(hslToRgb([h, clamp(s, 0, 1), clamp(l, 0.02, 0.97)]))
+
 export interface ToneShift { readonly l?: number; readonly s?: number; readonly h?: number }
 
 /** Shift a colour in HSL. l/s are additive (0..1), h in degrees. */
@@ -58,6 +62,19 @@ export function mix(a: string, b: string, t: number): string {
   const [ar, ag, ab] = hexToRgb(a)
   const [br, bg, bb] = hexToRgb(b)
   return rgbToHex([ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t])
+}
+
+/**
+ * The outline colour for a shape filled with `fill`: a very dark, slightly richer tint of the
+ * fill itself, blended `tint` of the way from the character's global outline colour. An orange
+ * fox therefore gets a warm brown line and a grey cat a cool one, which keeps each form reading
+ * as one material instead of a sticker glued onto black.
+ */
+export function inkOf(fill: string, fallback: string, tint: number): string {
+  if (tint <= 0) return fallback
+  const [h, s, l] = rgbToHsl(hexToRgb(fill))
+  const dark = rgbToHex(hslToRgb([h, clamp(s * 0.85 + 0.14, 0, 0.72), clamp(l * 0.3, 0.055, 0.2)]))
+  return mix(fallback, dark, clamp(tint, 0, 1))
 }
 
 /** Raise the lightness of near-black colours so they stay distinct from the ink outline. */
@@ -107,9 +124,16 @@ export interface InkOptions {
   readonly rule?: CanvasFillRule
 }
 
+/** Offset and width of each outline pass, as fractions of `w` and `swell`. */
+const SWELL_PASSES: readonly (readonly [dx: number, dy: number, k: number])[] = [
+  [0.4, 0.76, 1], [0.18, 0.34, 1.12],
+]
+
 /**
- * Fill + inked outline. `build(ctx)` must only issue path commands. The outline is stroked
- * twice (second pass nudged down-right) so line weight swells on the shadow side.
+ * Fill + inked outline. `build(ctx)` must only issue path commands. The outline is stroked in
+ * several passes nudged down-right by decreasing amounts, so the line is heaviest where the form
+ * turns away from the light and thins to `w` on the lit side. The passes never reach further than
+ * the first one, so adding weight does not grow the silhouette.
  */
 export function ink(ctx: Ctx, build: Build, o: InkOptions = {}): void {
   const { fill, line, w = 6, fillOnly = false, swell = 0.5, rule = 'nonzero' } = o
@@ -118,19 +142,30 @@ export function ink(ctx: Ctx, build: Build, o: InkOptions = {}): void {
   }
   if (fillOnly || !line) return
   ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = line
-  ctx.lineWidth = w
   if (swell > 0) {
-    ctx.save(); ctx.translate(w * 0.4 * swell, w * 0.76 * swell)
-    ctx.beginPath(); build(ctx); ctx.stroke(); ctx.restore()
+    // Fine lines cannot show a weight gradient at this scale, so they skip the middle pass.
+    const passes = w >= 5 ? SWELL_PASSES : SWELL_PASSES.slice(0, 1)
+    for (const [dx, dy, k] of passes) {
+      ctx.save(); ctx.translate(w * dx * swell, w * dy * swell)
+      ctx.lineWidth = w * k
+      ctx.beginPath(); build(ctx); ctx.stroke(); ctx.restore()
+    }
   }
+  ctx.lineWidth = w
   ctx.beginPath(); build(ctx); ctx.stroke()
+}
+
+export interface UnionOptions {
+  readonly fill: string | CanvasGradient
+  readonly line: string
+  readonly w: number
 }
 
 /**
  * Union of several shapes with one outer outline (no inner overlaps): strokes every shape at
  * double width first, then fills them all on top. Used for clouds of curls and fluffy pom-poms.
  */
-export function unionInk(ctx: Ctx, builds: readonly Build[], o: { fill: string; line: string; w: number }): void {
+export function unionInk(ctx: Ctx, builds: readonly Build[], o: UnionOptions): void {
   ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = o.line; ctx.lineWidth = o.w * 2
   for (const b of builds) { ctx.beginPath(); b(ctx); ctx.stroke() }
   ctx.fillStyle = o.fill
@@ -186,27 +221,4 @@ export function rng(seed: number): () => number {
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296
   }
-}
-
-export interface ShadedOptions {
-  readonly base: string
-  readonly shade: string
-  readonly line: string
-  readonly w?: number
-  readonly off?: readonly [number, number]
-  readonly rule?: CanvasFillRule
-  /** Highlights, drawn clipped to the shape between the fills and the outline. */
-  readonly hi?: (ctx: Ctx) => void
-}
-
-/** Shade fill, then the base colour shifted up-left (clipped), highlights, then the outline. */
-export function shadedInk(ctx: Ctx, build: Build, o: ShadedOptions): void {
-  const { base, shade, line, w = 6, off = [-6, -8], rule = 'nonzero', hi } = o
-  ink(ctx, build, { fill: shade, fillOnly: true, rule })
-  ctx.save(); ctx.beginPath(); build(ctx); ctx.clip(rule)
-  ctx.translate(off[0], off[1]); ctx.fillStyle = base; ctx.beginPath(); build(ctx); ctx.fill(rule)
-  ctx.translate(-off[0], -off[1])
-  if (hi) hi(ctx)
-  ctx.restore()
-  ink(ctx, build, { line, w })
 }

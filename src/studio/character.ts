@@ -3,7 +3,7 @@ import { ink } from './draw'
 import { createRig, DESIGN } from './rig'
 import type { CanvasLike, Ctx, Pose, Rig, StudioConfig } from './types'
 import { drawBody } from './parts/body'
-import { drawEarsBack, drawEarsFront } from './parts/ears'
+import { drawEarShadow, drawEarsBack, drawEarsFront } from './parts/ears'
 import { drawBlush, drawBrows, drawEyes, eyeGeom } from './parts/eyes'
 import { drawFacialHair } from './parts/facialHair'
 import { drawCheekTufts, drawEyePatches, drawHeadFill } from './parts/faceShape'
@@ -17,6 +17,7 @@ import { drawSymbol } from './parts/symbols'
 /** Things painted on the face skin, clipped to the head outline. */
 function drawFaceSurface(ctx: Ctx, R: Rig): void {
   ctx.save(); ctx.beginPath(); R.head(ctx); ctx.clip()
+  drawEarShadow(ctx, R)
   drawEyePatches(ctx, R)
   if (R.animal) drawMuzzlePads(ctx, R)
   drawBlush(ctx, R)
@@ -46,10 +47,10 @@ export function drawCharacter(ctx: Ctx, cfg: StudioConfig, pose: Pose, bodyLayer
   drawHairBack(ctx, R); drawHeadwearBack(ctx, R)
   drawEarsBack(ctx, R); drawCheekTufts(ctx, R)
   if (bodyLayer) ctx.drawImage(bodyLayer as unknown as CanvasImageSource, 0, 0, DESIGN, DESIGN)
-  else drawBody(ctx, R.pal, cfg)
+  else drawBody(ctx, R.pal, cfg, R.mat)
   drawHeadFill(ctx, R)
   drawFaceSurface(ctx, R)
-  ink(ctx, (c) => R.head(c), { line: cfg.outline, w: 8, swell: 0.7 })
+  ink(ctx, (c) => R.head(c), { line: R.pal.lineSkin, w: 8, swell: 0.7 })
   drawEarsFront(ctx, R)
   drawFace(ctx, R)
   drawHairFront(ctx, R); drawHeadwearFront(ctx, R)

@@ -1,5 +1,6 @@
 // Headwear: cap, beanie (thick cuff + fluffy pom-pom), antenna, hijab (simple headscarf).
-import { TAU, ellipse, ink, shadedInk, smooth, unionInk } from '../draw'
+import { TAU, ellipse, ink, smooth, unionInk } from '../draw'
+import { occlude, shadedInk } from '../shade'
 import type { Build, Ctx, Rig, SpherePt } from '../types'
 import { L_TEMPLE, R_TEMPLE, arcPts } from './hairGeometry'
 
@@ -42,8 +43,7 @@ export function drawHeadwearCastShadow(ctx: Ctx, R: Rig): void {
     return
   }
   if (hw !== 'cap' && hw !== 'beanie') return
-  ctx.save(); ctx.translate(0, 11); ctx.globalAlpha = 0.5; ctx.fillStyle = R.pal.skinDeep
-  ctx.beginPath(); domeBuild(R)(ctx); ctx.fill(); ctx.restore()
+  occlude(ctx, domeBuild(R), { color: R.pal.skinDeep, alpha: 0.62 * Math.min(1, R.k || 1), dx: 0, dy: 17, steps: 5 })
 }
 
 export function drawHeadwearBack(ctx: Ctx, R: Rig): void {
@@ -55,7 +55,7 @@ export function drawHeadwearBack(ctx: Ctx, R: Rig): void {
   ctx.beginPath(); ctx.moveTo(P.x, P.y + 12); ctx.lineTo(top.x, top.y); ctx.stroke()
   ctx.strokeStyle = pal.skinShade; ctx.lineWidth = 5
   ctx.beginPath(); ctx.moveTo(P.x, P.y + 12); ctx.lineTo(top.x, top.y); ctx.stroke()
-  ink(ctx, (c) => ellipse(c, top.x, top.y - 8, 17, 17), { fill: pal.accent, line: pal.line, w: 6, swell: 0.4 })
+  ink(ctx, (c) => ellipse(c, top.x, top.y - 8, 17, 17), { fill: pal.accent, line: pal.lineAccent, w: 6, swell: 0.4 })
   ctx.fillStyle = '#fff'; ctx.beginPath(); ellipse(ctx, top.x - 6, top.y - 14, 5, 3.5, -0.5); ctx.fill()
 }
 
@@ -67,7 +67,10 @@ function strokeSpherePath(ctx: Ctx, R: Rig, list: readonly SpherePt[], depth: nu
 function drawDomeBody(ctx: Ctx, R: Rig): void {
   const { pal } = R
   const bandPhi = R.cfg.headwear === 'cap' ? 0.7 : 0.98
-  shadedInk(ctx, domeBuild(R), { base: pal.hat, shade: pal.hatShade, line: pal.line, w: 7, off: [-8, -9] })
+  shadedInk(ctx, domeBuild(R), {
+    base: pal.hat, shade: pal.hatShade, line: pal.lineHat, w: 7, off: [-8, -9],
+    form: { mat: 'cloth', k: R.k, spread: 1.2, rim: R.cfg.rimLight * 0.9 },
+  })
   ctx.strokeStyle = pal.hatShade; ctx.lineWidth = 4; ctx.lineCap = 'round'
   for (const t of [-0.75, 0, 0.75]) strokeSpherePath(ctx, R, [[t, bandPhi], [t * 0.6, 1.05], [0, 1.52]], 1.07)
   ctx.strokeStyle = pal.hatHi; ctx.lineWidth = 7
@@ -83,7 +86,7 @@ function drawPomPom(ctx: Ctx, R: Rig): void {
       const a = (i / 9) * TAU
       balls.push((c) => ellipse(c, Math.cos(a) * 22, Math.sin(a) * 20, 12, 12))
     }
-    unionInk(ctx, balls, { fill: pal.accent, line: pal.line, w: 5 })
+    unionInk(ctx, balls, { fill: pal.accent, line: pal.lineAccent, w: 5 })
     ctx.strokeStyle = pal.accentShade; ctx.lineWidth = 4; ctx.lineCap = 'round'
     for (let i = 0; i < 9; i += 2) {
       const a = (i / 9) * TAU
@@ -99,7 +102,8 @@ function drawBeanieCuff(ctx: Ctx, R: Rig): void {
   const bottom = R.pts(edgeList(0.58), 1.08, true)
   const cuff: Build = (c) => smooth(c, [...top, ...bottom.slice().reverse()])
   shadedInk(ctx, cuff, {
-    base: pal.accent, shade: pal.accentShade, line: pal.line, w: 7, off: [-5, -7],
+    base: pal.accent, shade: pal.accentShade, line: pal.lineAccent, w: 7, off: [-5, -7],
+    form: { mat: 'cloth', k: R.k, spread: 1.5 },
     hi: (c) => {
       c.strokeStyle = pal.accentShade; c.lineWidth = 5; c.lineCap = 'round'; c.beginPath()
       for (let t = -1.4; t <= 1.4; t += 0.24) {
@@ -117,15 +121,19 @@ function drawCapBrim(ctx: Ctx, R: Rig): void {
     R.pts(Array.from({ length: n }, (_, i): SpherePt => [from + i * step, phi]), d, false)
   const inner = ptsAt(9, -0.95, 0.2375, 0.7, 1.03)
   const outer = ptsAt(9, 0.95, -0.2375, 0.42, 1.3)
-  shadedInk(ctx, (c) => smooth(c, [...inner, ...outer]), { base: pal.hat, shade: pal.hatShade, line: pal.line, w: 7, off: [-3, -4] })
+  shadedInk(ctx, (c) => smooth(c, [...inner, ...outer]), {
+    base: pal.hat, shade: pal.hatShade, line: pal.lineHat, w: 7, off: [-3, -4],
+    form: { mat: 'cloth', k: R.k, spread: 1.7 },
+  })
   const P = R.proj(0, 1.52, 1.1)
-  R.at(ctx, P, 0, () => ink(ctx, (c) => ellipse(c, 0, 0, 12, 7), { fill: pal.hatShade, line: pal.line, w: 4.5, swell: 0.3 }), Math.max(P.sx, 0.6))
+  R.at(ctx, P, 0, () => ink(ctx, (c) => ellipse(c, 0, 0, 12, 7), { fill: pal.hatShade, line: pal.lineHat, w: 4.5, swell: 0.3 }), Math.max(P.sx, 0.6))
 }
 
 function drawHijab(ctx: Ctx, R: Rig): void {
   const { pal } = R
   shadedInk(ctx, hijabBuild(R), {
-    base: pal.hat, shade: pal.hatShade, line: pal.line, w: 6.5, off: [-6, -7], rule: 'evenodd',
+    base: pal.hat, shade: pal.hatShade, line: pal.lineHat, w: 6.5, off: [-6, -7], rule: 'evenodd',
+    form: { mat: 'cloth', k: R.k, spread: 1.15, rim: R.cfg.rimLight * 0.9 },
     hi: (c) => {
       c.lineCap = 'round'; c.strokeStyle = pal.hatHi; c.lineWidth = 8
       strokeSpherePath(c, R, [[-1.2, 0.95], [-0.7, 1.2], [-0.1, 1.3]], 1.1)

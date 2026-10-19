@@ -1,5 +1,5 @@
 // Shared hair geometry: silhouette arcs, hairlines on the face sphere, tapered strand shapes.
-import { shadedInk } from '../draw'
+import { shadedInk } from '../shade'
 import type { Build, Ctx, Pt, ProjPt, Rig, SpherePt } from '../types'
 
 const TAU = Math.PI * 2
@@ -60,7 +60,10 @@ export function strandBuild(R: Rig, line: readonly SpherePt[], s: Strand, bulge 
 /** Fill + outline a lock with a soft darker lower-right edge. */
 export function drawStrand(ctx: Ctx, R: Rig, build: Build, w = 4.5): void {
   const { pal } = R
-  shadedInk(ctx, build, { base: pal.hair, shade: pal.hairShade, line: pal.line, w, off: [-3, -4] })
+  shadedInk(ctx, build, {
+    base: pal.hair, shade: pal.hairShade, line: pal.lineHair, w, off: [-3, -4],
+    form: { mat: 'cloth', k: R.k, spread: 1.6 },
+  })
 }
 
 /** Soft light band across the crown: a wide translucent stroke plus a thin bright core. */

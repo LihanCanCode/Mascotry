@@ -1,7 +1,7 @@
 // Config defaults + validation. `normaliseConfig` is the only way configs enter the renderer.
 import {
   BROW_STYLES, CHEEK_FLUFFS, EAR_TYPES, EYE_PATCHES, EYE_SIZES, FACE_SHAPES, FACIAL_HAIRS, GLASSES, HAIR_STYLES,
-  HEADWEARS, LASHES, LIDS, NECKLINES, SHIRT_DETAILS,
+  HEADWEARS, LASHES, LIDS, MATERIALS, NECKLINES, SHIRT_DETAILS,
 } from './types'
 import type { CheekFluff, EarType, StudioConfig } from './types'
 
@@ -13,6 +13,7 @@ export const DEFAULT_CONFIG: StudioConfig = Object.freeze({
   glasses: 'none', glassesColor: '#2a1c2e', blush: true, blushColor: '#ff8aa8',
   headwear: 'none', headwearColor: '#e8505b',
   shirt: '#5b7bd5', neckline: 'crew', shirtDetail: 'none', accent: '#ffcf4a', outline: '#2b1d33',
+  material: 'auto', shading: 1, rimLight: 1, lineTint: 1, edgeTexture: 1,
 })
 
 const COLOUR_KEYS = [
@@ -23,10 +24,20 @@ const COLOUR_KEYS = [
 const ENUMS: Readonly<Record<string, readonly string[]>> = {
   faceShape: FACE_SHAPES, ears: EAR_TYPES, cheekFluff: CHEEK_FLUFFS, eyePatch: EYE_PATCHES, hairStyle: HAIR_STYLES,
   facialHair: FACIAL_HAIRS, eyeSize: EYE_SIZES, lashes: LASHES, lids: LIDS, brows: BROW_STYLES, glasses: GLASSES,
-  headwear: HEADWEARS, neckline: NECKLINES, shirtDetail: SHIRT_DETAILS,
+  headwear: HEADWEARS, neckline: NECKLINES, shirtDetail: SHIRT_DETAILS, material: MATERIALS,
 }
 
 const HEX = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
+
+/** Dial keys are finite numbers in 0..max; anything else is a caller mistake, not a clamp. */
+const DIALS: Readonly<Record<string, number>> = { shading: 1.5, rimLight: 1.5, lineTint: 1, edgeTexture: 1.5 }
+
+function normaliseDial(key: string, max: number, value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > max) {
+    throw new RangeError(`${key}: expected a number in 0..${max}, got ${JSON.stringify(value)}`)
+  }
+  return value
+}
 
 function normaliseColour(key: string, value: unknown): string {
   if (typeof value !== 'string' || !HEX.test(value)) {
@@ -43,6 +54,8 @@ function autoFluff(ears: EarType): CheekFluff {
 
 function checkValue(key: string, value: unknown): unknown {
   if ((COLOUR_KEYS as readonly string[]).includes(key)) return normaliseColour(key, value)
+  const max = DIALS[key]
+  if (max !== undefined) return normaliseDial(key, max, value)
   const options = ENUMS[key]
   if (options) {
     if (typeof value !== 'string' || !options.includes(value)) {

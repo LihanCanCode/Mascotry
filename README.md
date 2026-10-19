@@ -16,6 +16,13 @@ two sprite sheets, each a 3x3 grid:
 - **Poses** — nine head directions, from up-left to down-right.
 - **Moods** — nine expressions, from a blink to a dizzy spin.
 
+Each form is painted with a radial light model rather than a flat fill: a key light off the
+upper left gives a broad lit side, a soft terminator and a warm bounce in the shadow, with
+contact shadows where parts meet and a thin rim on the lit edge. Outlines are tinted dark
+versions of the colour they enclose, so an orange fox gets a warm brown line and a grey cat a
+cool one. Metal takes a harder specular and a cooler bounce than fur. The `shading`, `rimLight`,
+`lineTint`, `edgeTexture` and `material` config keys turn each of those down or off.
+
 The torso is drawn once and reused across all eighteen cells, so the body never
 shifts while the head turns. At runtime the component measures where the pointer
 sits relative to the mascot, picks a cell, and moves the background. Two image
@@ -66,6 +73,7 @@ pnpm test:cov     # with coverage
 pnpm typecheck
 pnpm build        # static site in dist/
 pnpm test:e2e     # builds, serves, and drives a real browser
+pnpm shots out/x  # contact sheets and zooms of every preset, for looking at the art
 ```
 
 Deploy `dist/` to any static host.

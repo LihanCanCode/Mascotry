@@ -14,7 +14,8 @@
     "test:cov": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "test:e2e:shots": "playwright test e2e/looks.spec.ts"
+    "test:e2e:shots": "playwright test e2e/looks.spec.ts",
+    "shots": "esbuild --bundle --platform=node --format=esm --target=node20 --external:@napi-rs/canvas scripts/shots.ts --outfile=out/shots.mjs --log-level=warning && node out/shots.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",

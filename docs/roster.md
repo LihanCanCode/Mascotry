@@ -14,10 +14,10 @@ brow sets.
 Animals and objects take the common noun. People take a given name, which reads
 warmer than labelling someone "Beard" or "Glasses" and keeps the roster ours.
 
-Two names are off the table whatever else we build. **Kamran** is another
-author's own name and self-portrait. **Gearbot** and **Postbot** are his
-coinages rather than ordinary words. Everything else on this list is a plain
-noun that nobody owns.
+Two kinds of name are off the table whatever else we build: anyone else's own
+name or self-portrait, and anyone else's coined character names. Every name on
+this list is either a plain noun that nobody owns or an ordinary given name
+chosen here.
 
 ---
 

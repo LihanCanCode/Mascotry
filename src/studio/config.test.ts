@@ -46,6 +46,29 @@ describe('normaliseConfig', () => {
     expect(normaliseConfig({ facialHairColor: '#554433' }).facialHairColor).toBe('#554433')
   })
 
+  it('defaults every shading dial to on so existing configs gain the new rendering', () => {
+    const c = normaliseConfig({})
+    expect(c.material).toBe('auto')
+    expect([c.shading, c.rimLight, c.lineTint, c.edgeTexture]).toEqual([1, 1, 1, 1])
+  })
+
+  it('accepts dial values inside their range, including zero', () => {
+    const c = normaliseConfig({ shading: 0, rimLight: 1.5, lineTint: 0.5, edgeTexture: 1.2 })
+    expect([c.shading, c.rimLight, c.lineTint, c.edgeTexture]).toEqual([0, 1.5, 0.5, 1.2])
+  })
+
+  it('rejects dial values that are negative, over the maximum or not numbers', () => {
+    expect(() => normaliseConfig({ shading: -0.1 })).toThrow(RangeError)
+    expect(() => normaliseConfig({ shading: 2 })).toThrow(RangeError)
+    expect(() => normaliseConfig({ lineTint: 1.5 })).toThrow(RangeError)
+    expect(() => normaliseConfig({ edgeTexture: NaN })).toThrow(RangeError)
+    expect(() => normaliseConfig({ rimLight: '1' as never })).toThrow(RangeError)
+  })
+
+  it('rejects an unknown material', () => {
+    expect(() => normaliseConfig({ material: 'glass' as never })).toThrow(RangeError)
+  })
+
   it('is idempotent', () => {
     const once = normaliseConfig({ ears: 'fox', skin: '#F08A3C' })
     expect(normaliseConfig(once)).toEqual(once)

@@ -29,6 +29,8 @@ export const EYE_SIZES = ['small', 'medium', 'large'] as const
 export const LASHES = ['none', 'soft', 'long'] as const
 export const LIDS = ['normal', 'heavy', 'sleepy'] as const
 export const BROW_STYLES = ['soft', 'bold', 'thin', 'arched'] as const
+/** How a surface takes light. 'auto' resolves to metal for bolt ears, fur for animals, else skin. */
+export const MATERIALS = ['auto', 'fur', 'skin', 'metal'] as const
 
 export type FaceShape = (typeof FACE_SHAPES)[number]
 export type EarType = (typeof EAR_TYPES)[number]
@@ -44,6 +46,9 @@ export type EyeSize = (typeof EYE_SIZES)[number]
 export type Lashes = (typeof LASHES)[number]
 export type Lids = (typeof LIDS)[number]
 export type BrowStyle = (typeof BROW_STYLES)[number]
+export type MaterialChoice = (typeof MATERIALS)[number]
+/** Resolved surface kind. 'cloth' is internal: garments never come from config. */
+export type Material = 'fur' | 'skin' | 'metal' | 'cloth'
 
 /** Every colour is a `#rrggbb` string after `normaliseConfig`. */
 export interface StudioConfig {
@@ -80,6 +85,15 @@ export interface StudioConfig {
   readonly shirtDetail: ShirtDetail
   readonly accent: string
   readonly outline: string
+  readonly material: MaterialChoice
+  /** Strength of the form gradients and contact shadows; 0 is the old flat look. */
+  readonly shading: number
+  /** Strength of the bright edge on the lit side. */
+  readonly rimLight: number
+  /** How far each outline is tinted toward a dark version of the colour it encloses. */
+  readonly lineTint: number
+  /** Size of the fur tufts and hair wobble that break up the silhouette. */
+  readonly edgeTexture: number
 }
 
 export type EyeKind = 'open' | 'closed' | 'wide' | 'star' | 'wink' | 'happy' | 'spiral' | 'shy'
@@ -124,6 +138,15 @@ export type SpherePt = readonly [number, number, number?]
 
 export interface Palette {
   readonly line: string
+  readonly lineSkin: string
+  readonly lineHair: string
+  readonly lineShirt: string
+  readonly lineHat: string
+  readonly lineAccent: string
+  readonly lineMuzzle: string
+  readonly lineBeard: string
+  readonly skinRim: string
+  readonly shirtRim: string
   readonly skin: string
   readonly skinShade: string
   readonly skinHi: string
@@ -157,6 +180,10 @@ export interface Rig {
   readonly cfg: StudioConfig
   readonly pal: Palette
   readonly animal: boolean
+  /** Resolved surface kind of the character itself (head, ears, muzzle). */
+  readonly mat: Material
+  /** Shading strength, copied from the config for terseness at the call sites. */
+  readonly k: number
   readonly dx: number
   readonly dy: number
   readonly cx: number

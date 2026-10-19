@@ -1,6 +1,7 @@
 // Body: neck, torso, neckline, shirt detail. Takes no pose, so it is identical in all cells.
-import { ellipse, ink, roundRect, shadedInk, starPath } from '../draw'
-import type { Build, Ctx, Palette, StudioConfig } from '../types'
+import { ellipse, ink, roundRect, starPath } from '../draw'
+import { occlude, rgba, rimLight, shadedInk } from '../shade'
+import type { Build, Ctx, Material, Palette, StudioConfig } from '../types'
 
 /** Rows at/below this (512 design space) are never touched by head parts: the "body identity" band. */
 export const BODY_TOP = 372
@@ -25,8 +26,8 @@ function drawShirtHighlights(c: Ctx, pal: Palette, cfg: StudioConfig): void {
 
 function drawBadge(ctx: Ctx, pal: Palette): void {
   ctx.save(); ctx.translate(310, 404)
-  ink(ctx, (c) => ellipse(c, 0, 0, 17, 17), { fill: pal.accent, line: pal.line, w: 4.5, swell: 0.3 })
-  ink(ctx, (c) => starPath(c, 10, 0.48), { fill: '#fff', line: pal.line, w: 2.5, swell: 0 })
+  ink(ctx, (c) => ellipse(c, 0, 0, 17, 17), { fill: pal.accent, line: pal.lineAccent, w: 4.5, swell: 0.3 })
+  ink(ctx, (c) => starPath(c, 10, 0.48), { fill: '#fff', line: pal.lineAccent, w: 2.5, swell: 0 })
   ctx.restore()
 }
 
@@ -36,9 +37,43 @@ const tri = (pts: Poly): Build => (c) => {
   c.closePath()
 }
 
+const neckShape: Build = (c) => roundRect(c, 231, 312, 50, 64, 12)
+
+/**
+ * The chin sits in front of the neck, so the neck darkens under it. This is what stops the head
+ * reading as a sticker laid on a separate torso. It lives in the body layer because the body must
+ * stay pose-free, which is also why the chin is approximated rather than taken from the rig.
+ */
+function drawChinShadow(ctx: Ctx, pal: Palette, k: number): void {
+  if (k <= 0) return
+  ctx.save(); ctx.beginPath(); neckShape(ctx); ctx.clip()
+  occlude(ctx, (c) => ellipse(c, 256, 298, 74, 48), { color: pal.skinDeep, alpha: 0.9 * k, dx: 0, dy: 28, steps: 5 })
+  ctx.restore()
+}
+
+/** The neck casts into the shirt, which is most of what reads as "collar" at thumbnail size. */
+function drawCollarShadow(ctx: Ctx, pal: Palette, k: number): void {
+  if (k <= 0) return
+  ctx.save(); ctx.beginPath(); torso(ctx); ctx.clip()
+  occlude(ctx, neckShape, { color: pal.shirtShade, alpha: 0.75 * k, dx: 2, dy: 18, steps: 4 })
+  ctx.restore()
+}
+
 function drawNeckline(ctx: Ctx, pal: Palette, cfg: StudioConfig): void {
-  const line = pal.line
-  const hole = (path: Build): void => ink(ctx, path, { fill: pal.skinShade, line, w: 5, swell: 0.3 })
+  const line = pal.lineShirt
+  const hole = (path: Build): void => {
+    ink(ctx, path, { fill: pal.skinShade, line, w: 5, swell: 0.3 })
+    if (cfg.shading <= 0) return
+    // Inside the opening the light only reaches the bottom: the chin blocks the rest.
+    const k = Math.min(1, cfg.shading)
+    const g = ctx.createLinearGradient(0, 340, 0, 402)
+    g.addColorStop(0, rgba(pal.skinDeep, 0.85 * k))
+    g.addColorStop(0.7, rgba(pal.skinDeep, 0.18 * k))
+    g.addColorStop(1, rgba(pal.skinDeep, 0))
+    ctx.fillStyle = g
+    ctx.beginPath(); path(ctx); ctx.fill()
+    ink(ctx, path, { line, w: 5, swell: 0.3 })
+  }
   switch (cfg.neckline) {
     case 'v':
       hole(tri([[225, 351], [256, 400], [287, 351]])); break
@@ -66,7 +101,7 @@ function drawNeckline(ctx: Ctx, pal: Palette, cfg: StudioConfig): void {
 }
 
 /** Hijab cape draped over the shoulders: part of the static body so the layer stays pose-free. */
-function drawHijabDrape(ctx: Ctx, pal: Palette): void {
+function drawHijabDrape(ctx: Ctx, pal: Palette, k: number): void {
   const cape: Build = (c) => {
     c.moveTo(196, 346); c.quadraticCurveTo(256, 330, 316, 346)
     c.bezierCurveTo(338, 356, 348, 380, 346, 410)
@@ -74,7 +109,8 @@ function drawHijabDrape(ctx: Ctx, pal: Palette): void {
     c.bezierCurveTo(164, 380, 174, 356, 196, 346); c.closePath()
   }
   shadedInk(ctx, cape, {
-    base: pal.hat, shade: pal.hatShade, line: pal.line, w: 6.5, off: [-8, -6],
+    base: pal.hat, shade: pal.hatShade, line: pal.lineHat, w: 6.5, off: [-8, -6],
+    form: { mat: 'cloth', k, spread: 1.2, rim: 0.6 },
     hi: (c) => {
       c.strokeStyle = pal.hatHi; c.lineWidth = 7; c.lineCap = 'round'
       c.beginPath(); c.moveTo(186, 392); c.quadraticCurveTo(190, 372, 208, 362); c.stroke()
@@ -85,14 +121,16 @@ function drawHijabDrape(ctx: Ctx, pal: Palette): void {
   })
 }
 
-export function drawBody(ctx: Ctx, pal: Palette, cfg: StudioConfig): void {
-  const line = pal.line
-  ink(ctx, (c) => roundRect(c, 231, 312, 50, 64, 12), { fill: pal.skinShade, line, w: 6, swell: 0.4 })
+export function drawBody(ctx: Ctx, pal: Palette, cfg: StudioConfig, mat: Material): void {
+  ink(ctx, neckShape, { fill: pal.skinShade, line: pal.lineSkin, w: 6, swell: 0.4 })
+  drawChinShadow(ctx, pal, cfg.shading)
   shadedInk(ctx, torso, {
-    base: pal.shirt, shade: pal.shirtShade, line, w: 7, off: [-9, -4],
+    base: pal.shirt, shade: pal.shirtShade, line: pal.lineShirt, w: 7, off: [-9, -4],
+    form: { mat: mat === 'metal' ? 'metal' : 'cloth', k: cfg.shading, spread: 1.15, rim: cfg.rimLight },
     hi: (c) => drawShirtHighlights(c, pal, cfg),
   })
+  drawCollarShadow(ctx, pal, cfg.shading)
   if (cfg.shirtDetail === 'badge') drawBadge(ctx, pal)
-  if (cfg.headwear === 'hijab') drawHijabDrape(ctx, pal)
+  if (cfg.headwear === 'hijab') drawHijabDrape(ctx, pal, cfg.shading)
   else drawNeckline(ctx, pal, cfg)
 }
