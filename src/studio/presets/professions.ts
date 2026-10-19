@@ -49,7 +49,7 @@ export const PROFESSIONS: readonly StudioPreset[] = Object.freeze([
   }),
   j('barista', 'Barista', {
     faceShape: 'round', skin: '#a06b45', hairStyle: 'curly', hairColor: '#2a1d20', eyeColor: '#36231a',
-    eyeSize: 'large', headwear: 'headband', headwearColor: '#35584a', shirt: '#d8d2c6', neckline: 'crew',
+    eyeSize: 'large', headwear: 'headband', headwearColor: '#e8b43a', shirt: '#d8d2c6', neckline: 'crew',
     accent: '#8a5a3a', neckAccessory: 'apron', neckAccessoryColor: '#35584a',
   }),
   j('teacher', 'Teacher', {
@@ -111,7 +111,7 @@ export const PROFESSIONS: readonly StudioPreset[] = Object.freeze([
   }),
   j('welder', 'Welder', {
     faceShape: 'square', skin: '#8a5a3c', hairStyle: 'buzz', hairColor: '#241a22', eyeColor: '#2e1d16',
-    brows: 'bold', headwear: 'visor', headwearColor: '#3b4350', shirt: '#5a4a3a', neckline: 'crew',
+    brows: 'bold', headwear: 'visor', headwearColor: '#8a98aa', shirt: '#5a4a3a', neckline: 'crew',
     accent: '#e8a23a', neckAccessory: 'apron', neckAccessoryColor: '#6a5240',
   }),
   j('gardener', 'Gardener', {
