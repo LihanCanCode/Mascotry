@@ -18,6 +18,13 @@ export interface VocabEntry {
   readonly phrases: readonly string[]
   readonly patch?: Partial<StudioConfig>
   readonly colourSlot?: ColourSlot
+  /**
+   * A second field the same colour fills.
+   *
+   * One garment, two parts of the drawing: a red hoodie is a red hood and a red
+   * top, and colouring only one of them looks like a mistake.
+   */
+  readonly alsoSlot?: ColourSlot
   /** What "no ..." means, when turning the part off is not simply its `none` value. */
   readonly off?: Partial<StudioConfig>
 }

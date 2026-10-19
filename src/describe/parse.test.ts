@@ -318,6 +318,81 @@ describe('describeToConfig', () => {
     })
   })
 
+  /**
+   * A colour standing in front of a word belongs to that word.
+   *
+   * "short beard, white collar" used to produce a white beard: the collar names
+   * a shape rather than a colour, so the colour reached backwards and found the
+   * beard. Read aloud, nobody would ever mean that.
+   */
+  describe('a colour never reaches backwards past the noun it was written in front of', () => {
+    it('leaves the beard alone when the white belongs to the collar', () => {
+      const result = cfg('short beard, white collar')
+      expect(result.facialHair).toBe('beard')
+      expect(result.facialHairColor).toBe(DEFAULT_CONFIG.facialHairColor)
+      expect(result.neckline).toBe('collar')
+      expect(result.accent).toBe('#f7f4fa')
+    })
+
+    it('reads the whole sentence that found it', () => {
+      const result = cfg('short black hair, short beard, brown skin, black blazer, white collar')
+      expect(result.facialHairColor).toBe(DEFAULT_CONFIG.facialHairColor)
+      expect(result.hairColor).toBe('#1e1b24')
+      expect(result.skin).toBe('#8a5a38')
+      expect(result.shirt).toBe('#22232a')
+      expect(result.accent).toBe('#f7f4fa')
+      expect(result.facialHair).toBe('beard')
+    })
+
+    it('still colours the beard when the beard is what was named', () => {
+      expect(cfg('short beard, white beard').facialHairColor).toBe('#f7f4fa')
+      expect(cfg('a grey moustache').facialHairColor).toBe('#9aa0a8')
+    })
+
+    it('puts a colour in front of a shape-only word onto the shirt', () => {
+      expect(cfg('a beard and a navy v neck').shirt).toBe('#22365e')
+      expect(cfg('a beard and a navy v neck').facialHairColor).toBe(DEFAULT_CONFIG.facialHairColor)
+    })
+
+    it('still lets a trailing colour find the noun before it', () => {
+      expect(cfg('hair, dark brown').hairColor).not.toBe(DEFAULT_CONFIG.hairColor)
+      expect(cfg('beard, silver').facialHairColor).toBe('#c3c9d0')
+    })
+
+    it('leaves the shirt alone when only the collar was coloured', () => {
+      expect(cfg('white collar').shirt).toBe(DEFAULT_CONFIG.shirt)
+    })
+  })
+
+  describe('garments', () => {
+    it.each([
+      ['blazer'], ['jacket'], ['coat'], ['suit'], ['cardigan'], ['waistcoat'], ['vest'], ['uniform'],
+      ['overalls'], ['pullover'], ['dress'], ['tee'], ['t shirt'], ['jersey'],
+    ])('%s is a word it knows, not a word it skips', (word) => {
+      const result = describeToConfig(`a teal ${word}`)
+      expect(result.ignored).toEqual([])
+      expect(result.config.shirt).toBe('#2f8f8f')
+    })
+
+    it('gives a jacket a collar, since that is what one has', () => {
+      expect(cfg('a black jacket').neckline).toBe('collar')
+    })
+
+    it('colours a hoodie in both the places a hoodie is', () => {
+      const result = cfg('a red hoodie')
+      expect(result.headwear).toBe('hood')
+      expect(result.headwearColor).toBe('#d23b3b')
+      expect(result.shirt).toBe('#d23b3b')
+    })
+
+    it('colours the stripes rather than the whole shirt', () => {
+      const result = cfg('a blue shirt with red stripes')
+      expect(result.shirt).toBe('#3f6fb5')
+      expect(result.shirtDetail).toBe('stripe')
+      expect(result.accent).toBe('#d23b3b')
+    })
+  })
+
   describe('what it does not understand', () => {
     it('lists the words it could not place', () => {
       const result = describeToConfig('a brave llama riding a skateboard')

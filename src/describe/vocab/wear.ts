@@ -31,7 +31,7 @@ const HATS: readonly VocabEntry[] = [
   { phrases: ['beanie', 'woolly hat', 'wool hat', 'bobble hat', 'knitted hat'], patch: { headwear: 'beanie' } },
   { phrases: ['antenna', 'antenna hat'], patch: { headwear: 'antenna' } },
   { phrases: ['hijab', 'headscarf', 'head scarf'], patch: { headwear: 'hijab' } },
-  { phrases: ['hood', 'hoodie', 'hooded top'], patch: { headwear: 'hood' } },
+  { phrases: ['hood'], patch: { headwear: 'hood' } },
   { phrases: ['toque', 'chefs hat', 'chef hat', 'cooks hat'], patch: { headwear: 'toque' } },
   { phrases: ['hard hat', 'safety helmet', 'builders helmet'], patch: { headwear: 'hardHat' } },
   { phrases: ['straw hat', 'sun hat', 'boater'], patch: { headwear: 'strawHat' } },
@@ -46,7 +46,17 @@ const HATS: readonly VocabEntry[] = [
   { phrases: ['surgical cap', 'scrub cap', 'theatre cap'], patch: { headwear: 'surgicalCap' } },
 ]
 
-export const HEADWEAR_WORDS: readonly VocabEntry[] = allInto('headwearColor', HATS)
+export const HEADWEAR_WORDS: readonly VocabEntry[] = [
+  ...allInto('headwearColor', HATS),
+  // A hoodie is a garment as much as a hat, and a red one is red in both
+  // places, so its colour fills the hood and the top together.
+  {
+    phrases: ['hoodie', 'hooded top', 'hooded jumper'],
+    patch: { headwear: 'hood' },
+    colourSlot: 'headwearColor',
+    alsoSlot: 'shirt',
+  },
+]
 
 const NECKWEAR: readonly VocabEntry[] = [
   { phrases: ['stethoscope'], patch: { neckAccessory: 'stethoscope' } },
@@ -70,20 +80,50 @@ const SIDEWEAR: readonly VocabEntry[] = [
 
 export const SIDE_WORDS: readonly VocabEntry[] = allInto('sideAccessoryColor', SIDEWEAR)
 
+/**
+ * The garment words, and what a colour in front of one of them fills.
+ *
+ * The neckline is a shape, so a colour on it belongs to the shirt — except the
+ * collar, the stripes and the badge, which the rig genuinely draws in the
+ * accent colour. So "a white collar" gives a white collar on whatever shirt is
+ * already there, rather than repainting the whole shirt.
+ */
 export const SHIRT_WORDS: readonly VocabEntry[] = [
-  { phrases: ['v neck', 'vee neck'], patch: { neckline: 'v' } },
-  { phrases: ['turtleneck', 'turtle neck', 'roll neck', 'polo neck'], patch: { neckline: 'turtle' } },
-  { phrases: ['boat neck', 'boatneck'], patch: { neckline: 'boat' } },
-  { phrases: ['collared shirt', 'shirt collar', 'collared', 'collar', 'buttoned shirt'], patch: { neckline: 'collar' } },
-  { phrases: ['crew neck', 'crewneck', 'round neck'], patch: { neckline: 'crew' } },
-  { phrases: ['scarf collar', 'cowl neck'], patch: { neckline: 'scarf' } },
-  { phrases: ['striped', 'stripes', 'stripy', 'stripey', 'striped shirt'], patch: { shirtDetail: 'stripe' } },
-  { phrases: ['badge', 'crest', 'logo', 'emblem'], patch: { shirtDetail: 'badge' } },
+  { phrases: ['v neck', 'vee neck'], patch: { neckline: 'v' }, colourSlot: 'shirt' },
   {
-    phrases: ['shirt', 'jumper', 'sweater', 'sweatshirt', 'top', 't shirt', 'tshirt', 'tee', 'jersey', 'blouse', 'kit'],
+    phrases: ['turtleneck', 'turtle neck', 'roll neck', 'polo neck'],
+    patch: { neckline: 'turtle' },
     colourSlot: 'shirt',
   },
-  { phrases: ['accent', 'accents', 'trim', 'trimmed'], colourSlot: 'accent' },
+  { phrases: ['boat neck', 'boatneck'], patch: { neckline: 'boat' }, colourSlot: 'shirt' },
+  {
+    phrases: ['collared shirt', 'shirt collar', 'collared', 'collar', 'buttoned shirt', 'button up'],
+    patch: { neckline: 'collar' },
+    colourSlot: 'accent',
+  },
+  { phrases: ['crew neck', 'crewneck', 'round neck'], patch: { neckline: 'crew' }, colourSlot: 'shirt' },
+  { phrases: ['scarf collar', 'cowl neck'], patch: { neckline: 'scarf' }, colourSlot: 'shirt' },
+  {
+    phrases: ['striped', 'stripes', 'stripy', 'stripey', 'striped shirt'],
+    patch: { shirtDetail: 'stripe' },
+    colourSlot: 'accent',
+  },
+  { phrases: ['badge', 'crest', 'logo', 'emblem'], patch: { shirtDetail: 'badge' }, colourSlot: 'accent' },
+  {
+    phrases: [
+      'shirt', 'jumper', 'sweater', 'sweatshirt', 'top', 't shirt', 'tshirt', 'tee', 'jersey', 'blouse', 'kit',
+      'pullover', 'dress', 'robe', 'gown', 'outfit', 'clothes',
+    ],
+    colourSlot: 'shirt',
+  },
+  {
+    phrases: [
+      'blazer', 'jacket', 'coat', 'suit', 'cardigan', 'waistcoat', 'vest', 'uniform', 'overalls', 'dungarees',
+    ],
+    patch: { neckline: 'collar' },
+    colourSlot: 'shirt',
+  },
+  { phrases: ['accent', 'accents', 'trim', 'trimmed', 'detail'], colourSlot: 'accent' },
 ]
 
 export const WEAR_GROUPS: readonly (readonly VocabEntry[])[] = [

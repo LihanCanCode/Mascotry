@@ -57,7 +57,10 @@ export const ANIMAL_WORDS: readonly VocabEntry[] = [
 
 export const HAIR_WORDS: readonly VocabEntry[] = [
   { phrases: ['curly', 'curls', 'curly hair', 'afro', 'frizzy', 'coily', 'wavy'], patch: { hairStyle: 'curly' } },
-  { phrases: ['bob', 'bob cut', 'bobbed hair', 'shoulder length hair', 'shoulder length'], patch: { hairStyle: 'bob' } },
+  {
+    phrases: ['bob', 'bob cut', 'bobbed hair', 'shoulder length hair', 'shoulder length'],
+    patch: { hairStyle: 'bob' },
+  },
   {
     phrases: ['buzz', 'buzz cut', 'crew cut', 'cropped hair', 'shaved head', 'short hair', 'close cropped'],
     patch: { hairStyle: 'buzz' },

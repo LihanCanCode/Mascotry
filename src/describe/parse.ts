@@ -94,17 +94,45 @@ function patchFor(hit: Hit): Partial<StudioConfig> | null {
   return Object.keys(off).length > 0 ? (off as Partial<StudioConfig>) : (entry.patch ?? null)
 }
 
-/** The slot a colour at `index` belongs to: the nearest phrase that names one, else a default. */
-function slotFor(hits: readonly Hit[], index: number, spare: ColourSlot[]): ColourSlot | null {
-  for (let step = 1; step <= COLOUR_REACH; step += 1) {
-    const slot = hits[index + step]?.entry?.colourSlot
-    if (slot !== undefined) return slot
+/** The slots an entry offers a colour, which is usually one and occasionally two. */
+function slotsOf(entry: VocabEntry | undefined): readonly ColourSlot[] {
+  if (entry?.colourSlot === undefined) return []
+  return entry.alsoSlot === undefined ? [entry.colourSlot] : [entry.colourSlot, entry.alsoSlot]
+}
+
+/**
+ * The slots a colour at `index` fills.
+ *
+ * A colour standing directly in front of a phrase belongs to that phrase, full
+ * stop. If the phrase has no colour of its own — "white collar" names a shape,
+ * not a colour — the colour falls through to the shirt rather than reaching
+ * back to whatever came before it. Reaching backwards gave "short beard, white
+ * collar" a Father Christmas beard, which is the right answer to the wrong
+ * question: word order this plain has to be read the way it was written.
+ *
+ * Only a colour that trails its noun — "hair, dark brown" — looks backwards.
+ */
+function slotsFor(hits: readonly Hit[], index: number, spare: ColourSlot[]): readonly ColourSlot[] {
+  const next = hits[index + 1]
+  if (next?.entry !== undefined) {
+    const named = slotsOf(next.entry)
+    return named.length > 0 ? named : spareSlots(spare)
   }
   for (let step = 1; step <= COLOUR_REACH; step += 1) {
-    const slot = hits[index - step]?.entry?.colourSlot
-    if (slot !== undefined) return slot
+    const ahead = slotsOf(hits[index + step]?.entry)
+    if (ahead.length > 0) return ahead
   }
-  return spare.shift() ?? null
+  for (let step = 1; step <= COLOUR_REACH; step += 1) {
+    const behind = slotsOf(hits[index - step]?.entry)
+    if (behind.length > 0) return behind
+  }
+  return spareSlots(spare)
+}
+
+/** The next place an unattached colour can go, while there is one left. */
+function spareSlots(spare: ColourSlot[]): readonly ColourSlot[] {
+  const slot = spare.shift()
+  return slot === undefined ? [] : [slot]
 }
 
 /** Every phrase's patch, then every colour on top of it. */
@@ -117,8 +145,7 @@ function merge(hits: readonly Hit[]): Partial<StudioConfig> {
   const spare = [...DEFAULT_SLOTS]
   for (const [index, hit] of hits.entries()) {
     if (hit.colour === undefined) continue
-    const slot = slotFor(hits, index, spare)
-    if (slot !== null) patch = { ...patch, [slot]: hit.colour }
+    for (const slot of slotsFor(hits, index, spare)) patch = { ...patch, [slot]: hit.colour }
   }
   return patch
 }
