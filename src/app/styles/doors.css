@@ -1,0 +1,221 @@
+/*
+  The three doors, and the two panels behind two of them.
+
+  The doors are the one place in the app where three choices have to look
+  genuinely equal: nothing here gives any of them a louder background, a bigger
+  label or a nicer corner than the others. The selected one is marked the same
+  way the character cards are, with the key green and a word, not with size.
+*/
+
+.doors {
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  margin: 0 0 var(--s-4);
+}
+
+.door {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding: var(--s-3) var(--s-4);
+  border: var(--stroke) solid var(--rule);
+  border-radius: var(--r-md);
+  background: var(--sheet);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.door:hover {
+  border-color: var(--ink-soft);
+}
+
+.door[aria-selected='true'] {
+  border-color: var(--key);
+  background: var(--sheet-sunk);
+}
+
+.door-label {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  letter-spacing: 0.01em;
+}
+
+.door[aria-selected='true'] .door-label::after {
+  content: ' — open';
+  color: var(--ink-soft);
+  font-size: var(--t-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.door-note {
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+}
+
+.door-panel {
+  padding-top: var(--s-2);
+}
+
+/* "Describe it" */
+
+.describe-box {
+  width: 100%;
+  min-height: 5.5rem;
+  resize: vertical;
+  font-family: var(--font-body);
+  line-height: 1.45;
+}
+
+.describe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin: var(--s-3) 0;
+}
+
+.account {
+  margin: 0;
+  padding: var(--s-3);
+  border-left: var(--stroke) solid var(--rule);
+  background: var(--sheet-sunk);
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+  line-height: 1.5;
+}
+
+/* "From a photo" */
+
+.photo-promise {
+  max-width: 62ch;
+}
+
+.drop {
+  display: grid;
+  gap: var(--s-2);
+  justify-items: start;
+  padding: var(--s-5);
+  border: var(--stroke) dashed var(--rule);
+  border-radius: var(--r-md);
+  background: var(--sheet);
+}
+
+.drop-over {
+  border-color: var(--key);
+  background: var(--sheet-sunk);
+}
+
+.drop-words {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+}
+
+.drop input[type='file'] {
+  max-width: 100%;
+  font: inherit;
+  color: var(--ink);
+}
+
+.photo-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  margin: var(--s-4) 0;
+}
+
+.photo-side {
+  margin: 0;
+  display: grid;
+  gap: var(--s-2);
+  justify-items: center;
+}
+
+.photo-side canvas {
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+  background: var(--sheet-sunk);
+}
+
+.photo-caption {
+  color: var(--ink-soft);
+  font-size: var(--t-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.readout {
+  margin-top: var(--s-4);
+}
+
+.readout-title {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+}
+
+.readout-list,
+.readout-notes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.readout-row {
+  display: grid;
+  gap: var(--s-2);
+  align-items: center;
+  grid-template-columns: minmax(7rem, 1fr) minmax(6rem, auto) minmax(8rem, auto) minmax(6rem, auto);
+  padding: var(--s-2) 0;
+  border-bottom: var(--hair) solid var(--rule);
+}
+
+.readout-read {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+}
+
+.readout-chip {
+  width: 1.1rem;
+  height: 1.1rem;
+  border: var(--hair) solid var(--rule);
+  border-radius: var(--r-sm);
+}
+
+.readout-sure {
+  color: var(--good);
+  font-size: var(--t-xs);
+}
+
+.readout-unsure {
+  color: var(--ink-soft);
+  font-size: var(--t-xs);
+}
+
+.readout-fixed {
+  color: var(--ink-soft);
+  font-size: var(--t-xs);
+}
+
+.readout-notes {
+  margin-top: var(--s-3);
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+}
+
+.readout-notes li {
+  margin-bottom: var(--s-1);
+}
+
+@media (max-width: 40rem) {
+  .readout-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}

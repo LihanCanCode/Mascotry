@@ -5,15 +5,20 @@ import { useBlobUrls } from './hooks/useBlobUrls'
 import { useSheetRender } from './render/useSheetRender'
 import { createThumbCache } from './state/thumbs'
 import { initialState, reduce } from './state/reducer'
-import type { Backdrop, Resolution } from './state/reducer'
+import type { Backdrop, Door, Resolution } from './state/reducer'
+import type { PhotoReading } from '../photo'
 import { fileSlug } from './snippets'
 import { ExportPanel } from './parts/ExportPanel'
 import { PickGrid } from './parts/PickGrid'
+import { DoorTabs } from './parts/DoorTabs'
+import { DescribePanel } from './parts/DescribePanel'
+import { PhotoPanel } from './parts/PhotoPanel'
 import { PreviewPanel } from './parts/PreviewPanel'
 import { TunePanel } from './parts/TunePanel'
 import { ThemeToggle } from './parts/ThemeToggle'
 
 const HERO_SIZE = 180
+
 
 /** What the live region says, so the state of the drawing is never only visual. */
 function announcement(phase: string, error: string | null): string {
@@ -40,10 +45,13 @@ export function App(): React.JSX.Element {
   const onSize = useCallback((size: number) => dispatch({ type: 'setPreviewSize', size }), [])
   const onBackdrop = useCallback((backdrop: Backdrop) => dispatch({ type: 'setBackdrop', backdrop }), [])
   const onResolution = useCallback((resolution: Resolution) => dispatch({ type: 'setResolution', resolution }), [])
+  const onDoor = useCallback((door: Door) => dispatch({ type: 'setDoor', door }), [])
+  const onDescribe = useCallback((text: string) => dispatch({ type: 'describe', text }), [])
+  const onRead = useCallback((reading: PhotoReading) => dispatch({ type: 'readPhoto', reading }), [])
 
   return (
     <>
-      <a className="skip" href="#pick">Skip to the characters</a>
+      <a className="skip" href="#start">Skip to the three ways in</a>
 
       <header className="masthead">
         <p className="wordmark">
@@ -60,12 +68,12 @@ export function App(): React.JSX.Element {
           <div className="hero-words">
             <h1>Draw a mascot that watches the reader.</h1>
             <p className="lead">
-              Pick a character, change its face, and leave with two sprite sheets and the fifteen lines
-              that make them follow the cursor. It all happens in this tab — nothing is uploaded, and
-              there is nothing to pay for.
+              Pick a character, describe one in words, or read one off a photo. Change its face, then leave
+              with two sprite sheets and the fifteen lines that make them follow the cursor. It all happens in
+              this tab — nothing is uploaded, and there is nothing to pay for.
             </p>
             <p className="hero-actions">
-              <a className="button button-loud" href="#pick">Start with a character</a>
+              <a className="button button-loud" href="#start">Start a character</a>
               <a className="button button-quiet" href="/demo.html">See one in use</a>
             </p>
           </div>
@@ -86,10 +94,37 @@ export function App(): React.JSX.Element {
           ? <p className="alarm">{state.error} Try a different part or reload the page.</p>
           : null}
 
-        <section className="step" id="pick" aria-labelledby="pick-title">
-          <h2 id="pick-title"><span className="step-no" aria-hidden="true">1</span>Pick a character</h2>
-          <p className="step-note">Fourteen to start from. Every one of them is drawn by code, here, as you scroll.</p>
-          <PickGrid pickedId={state.presetId} cache={cache} onPick={onPick} />
+        <section className="step" id="start" aria-labelledby="start-title">
+          <h2 id="start-title"><span className="step-no" aria-hidden="true">1</span>Start a character</h2>
+          <p className="step-note">
+            Three ways in, and they all end up in the same place: whatever you start, you can finish any other way.
+          </p>
+
+          <DoorTabs open={state.door} onOpen={onDoor} />
+
+          <div
+            className="door-panel"
+            id="door-panel"
+            role="tabpanel"
+            aria-labelledby={`door-${state.door}`}
+          >
+            {state.door === 'pick'
+              ? <PickGrid pickedId={state.presetId} cache={cache} onPick={onPick} />
+              : null}
+            {state.door === 'describe'
+              ? <DescribePanel text={state.describeText} note={state.describeNote} onDescribe={onDescribe} />
+              : null}
+            {state.door === 'photo'
+              ? (
+                <PhotoPanel
+                  config={state.config}
+                  reading={state.reading}
+                  onRead={onRead}
+                  onChange={onTune}
+                />
+              )
+              : null}
+          </div>
         </section>
 
         <div className="bench">

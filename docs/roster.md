@@ -2,6 +2,77 @@
 
 What the gallery offers, and what it costs us to draw.
 
+## Three doors into the same room
+
+The gallery is one of three ways in, not the way in. All three produce the same
+thing — a `StudioConfig` — so they are interchangeable by construction, and a
+character begun at any door can be finished at any other.
+
+| Door | What it is | What it costs us |
+|---|---|---|
+| **Pick one** | The 57 saved configs below, as a grid of thumbnails. | Nothing new; each entry is a config. |
+| **Describe it** | A sentence, read by a keyword parser into a config. | A vocabulary table, `src/describe`. |
+| **From a photo** | A photo, read for colouring and features in the tab. | Image analysis, `src/photo`. |
+
+They are presented equal in weight: three plain cards, the open one marked the
+way a picked character is, with the key green and a word rather than with size.
+
+**Describe it** is a deterministic phrase table, not a model. It matches the
+longest run of words it knows, so "hard hat" beats "hat" and "square glasses"
+is not a square face; a colour word takes the colour slot of the nearest phrase
+that names one, which is how "a red scarf" and "hair, dark brown" both land
+correctly; and a word it does not know is reported back as skipped rather than
+guessed at. That last part is the point: the panel can only be honest about a
+vocabulary it admits the edges of.
+
+**From a photo** is deliberately the crudest measurement that could work for
+each field, because a crude measurement can be explained to the person looking
+at the result. Skin tone is the median of the face region.
+
+Finding that region is the whole difficulty, and the first version got it
+badly wrong. A real photograph — a man standing in a hotel lobby, warm wood and
+beige walls filling the frame — came back with a "face" the size of the whole
+picture, a mud-coloured skin tone, a shirt sampled off the wooden floor and a
+confident pair of glasses he was not wearing. Skin is a narrow band of chroma,
+and so are wood, sand and beige paint: the threshold alone can never carry
+this. So a candidate region now has to behave like a face before it is
+believed — a plausible share of the frame (between a fiftieth and two fifths),
+a face-like aspect, enough density to fill its own box, left-right symmetry
+about its own middle, and a band of darker pixels where the eyes and brows sit
+that is darker than the cheeks below it. A region that is too large gets one
+second look, re-measured around the colour of whatever sits in the middle of
+the frame, which is what rescues a close-up taken against a warm wall. If
+nothing passes, the answer is `face: null` and a note saying what kind of
+photograph would have worked. A brown blob in glasses is a worse outcome than
+"I could not read this one".
+
+The shirt is sampled from the band just below the face box, never from the
+bottom of the frame, because the bottom of a full-length photograph is the
+floor. Glasses are the longest *unbroken* dark run across the eye line rather
+than the count of dark pixels in it, since a pair of eyes is two dark patches
+with a nose between them and only a frame runs straight across; it would rather
+miss real glasses than add imaginary ones. Hair is whatever is left in the band above and beside that
+region once the face and the background are removed, with its silhouette
+choosing between buzz, bob, long, bun and curly. A beard is "the lower third of
+the face is darker than the rest of it". Eye colour is not read at all, and the
+panel says so: without landmarks there is nothing to measure, and inventing one
+would be worse than leaving it.
+
+What it honestly handles is a head-and-shoulders photograph against a plain
+background. A busy or warm-toned room is refused rather than guessed at, and
+the panel asks for the kind of photograph that works before anyone drops one in.
+
+The one inference rather than measurement is the ears: what was found is a
+human-skin face, so the ears are set to human and the cheek ruff that belongs
+to an animal's ears goes with them. It is listed in the readout like everything
+else and changed back in one click, which is the test any inference here has to
+pass — it has to be visible and reversible, or it does not belong.
+
+Every field carries a confidence, and only a confident field is applied — the
+rest stay at whatever the character already had. Each one is also individually
+overridable in the readout, because the photo route is a starting point rather
+than an answer.
+
 ## How the gallery is organised
 
 Four browsable groups, then the studio. Someone arriving with a site to decorate
@@ -17,9 +88,10 @@ entry is a plain noun: Fox, Doctor, Cricketer.
 | **Robots and objects** | For products and tools rather than people. | 9 | 1 |
 
 **Build your own** sits alongside them rather than inside them: start from any
-character above, or from nothing, and change the face, colours and accessories.
-Every gallery entry is just a saved config, so "use this one" and "make it mine"
-are the same screen.
+character above, from a description, from a photo, or from nothing, and change
+the face, colours and accessories. Every gallery entry is just a saved config,
+so "use this one" and "make it mine" are the same screen — and so is "describe
+one" and "read one off a photo".
 
 ### No given names
 

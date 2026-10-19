@@ -39,6 +39,14 @@ async function waitForMascot(): Promise<HTMLElement[]> {
   return screen.findAllByRole('button', { name: /Poke the/ }, { timeout: 40_000 })
 }
 
+/**
+ * The export snippet. Named rather than taken by role alone, because the three
+ * doors are a tab set too and both panels answer to `tabpanel`.
+ */
+function snippet(): HTMLElement {
+  return screen.getByRole('tabpanel', { name: /Plain HTML|React/ })
+}
+
 describe('App', () => {
   it('draws the first character without being asked', async () => {
     render(<App />)
@@ -57,13 +65,13 @@ describe('App', () => {
   it('offers the whole flow as headings in order', async () => {
     render(<App />)
     const headings = screen.getAllByRole('heading', { level: 2 }).map((node) => node.textContent)
-    expect(headings).toEqual(['1Pick a character', '2Tune it', '3Check it', '4Take it with you'])
+    expect(headings).toEqual(['1Start a character', '2Tune it', '3Check it', '4Take it with you'])
     await waitForMascot()
   })
 
   it('offers a way past the masthead for anyone using a keyboard', async () => {
     render(<App />)
-    expect(screen.getByRole('link', { name: 'Skip to the characters' }).getAttribute('href')).toBe('#pick')
+    expect(screen.getByRole('link', { name: 'Skip to the three ways in' }).getAttribute('href')).toBe('#start')
     await waitForMascot()
   })
 
@@ -71,10 +79,10 @@ describe('App', () => {
     render(<App />)
     await waitForMascot()
 
-    expect(screen.getByRole('tabpanel').textContent).toContain('label="Fox"')
+    expect(snippet().textContent).toContain('label="Fox"')
     fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Bramble' } })
-    await waitFor(() => expect(screen.getByRole('tabpanel').textContent).toContain('label="Bramble"'))
-    expect(screen.getByRole('tabpanel').textContent).toContain('bramble-directions')
+    await waitFor(() => expect(snippet().textContent).toContain('label="Bramble"'))
+    expect(snippet().textContent).toContain('bramble-directions')
   })
 
   it('escapes a hostile name before it reaches the snippet', async () => {
@@ -83,7 +91,7 @@ describe('App', () => {
 
     fireEvent.change(screen.getByLabelText('Name'), { target: { value: '"><script>alert(1)</script>' } })
     await waitFor(() => {
-      const code = screen.getByRole('tabpanel').textContent ?? ''
+      const code = snippet().textContent ?? ''
       expect(code).toContain('&quot;&gt;&lt;script&gt;')
       expect(code.match(/<script/g)).toHaveLength(1)
     })
@@ -147,6 +155,54 @@ describe('App', () => {
     } finally {
       HTMLCanvasElement.prototype.getContext = working
     }
+  })
+
+  it('offers three doors, all of them equally reachable', async () => {
+    render(<App />)
+    const doors = screen.getAllByRole('tab')
+    const labels = doors.map((door) => door.textContent ?? '')
+    expect(labels.some((label) => label.startsWith('Pick one'))).toBe(true)
+    expect(labels.some((label) => label.startsWith('Describe it'))).toBe(true)
+    expect(labels.some((label) => label.startsWith('From a photo'))).toBe(true)
+    await waitForMascot()
+  })
+
+  it('opens the describe door and redraws from what is typed', async () => {
+    render(<App />)
+    await waitForMascot()
+    const before = objectUrls().issued.length
+
+    fireEvent.click(screen.getByRole('tab', { name: /Describe it/ }))
+    fireEvent.change(screen.getByLabelText('Describe your character'), {
+      target: { value: 'a grey cat in a red scarf' },
+    })
+
+    await waitFor(() => expect(objectUrls().issued.length).toBeGreaterThan(before), { timeout: 40_000 })
+    expect(screen.getByText(/Read: /)).toBeTruthy()
+    // And the character it made can still be finished by hand.
+    expect((screen.getByLabelText('Ears') as HTMLSelectElement).value).toBe('cat')
+  })
+
+  it('opens the photo door and says the photo is never uploaded', async () => {
+    render(<App />)
+    await waitForMascot()
+
+    fireEvent.click(screen.getByRole('tab', { name: /From a photo/ }))
+    expect(screen.getByText('Drop a head-and-shoulders photo here')).toBeTruthy()
+    expect(screen.getByText(/It is never uploaded, and it is not kept/)).toBeTruthy()
+  })
+
+  it('keeps what was typed when the door is closed and opened again', async () => {
+    render(<App />)
+    await waitForMascot()
+
+    fireEvent.click(screen.getByRole('tab', { name: /Describe it/ }))
+    fireEvent.change(screen.getByLabelText('Describe your character'), { target: { value: 'a beret' } })
+    await waitFor(() => expect(screen.getByText(/Read: beret/)).toBeTruthy(), { timeout: 40_000 })
+
+    fireEvent.click(screen.getByRole('tab', { name: /Pick one/ }))
+    fireEvent.click(screen.getByRole('tab', { name: /Describe it/ }))
+    expect((screen.getByLabelText('Describe your character') as HTMLTextAreaElement).value).toBe('a beret')
   })
 
   it('releases every object URL when it goes away', async () => {

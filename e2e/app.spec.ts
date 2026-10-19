@@ -27,7 +27,7 @@ test('loads with no console errors and asks nothing of any other origin', async 
 test('names itself and offers the whole flow as headings', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toContainText('watches the reader')
-  for (const title of ['Pick a character', 'Tune it', 'Check it', 'Take it with you']) {
+  for (const title of ['Start a character', 'Tune it', 'Check it', 'Take it with you']) {
     await expect(page.getByRole('heading', { name: new RegExp(title) })).toBeVisible()
   }
 })

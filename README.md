@@ -7,6 +7,27 @@ Everything runs in the browser. No account, no server, no API key, no cost — a
 no requests to anywhere but the page itself, which the end-to-end suite checks
 rather than assumes.
 
+## Three ways to start one
+
+Equal doors into the same studio. Whatever you start, you can finish any other
+way, because all three produce the same small config.
+
+- **Pick one** — 57 characters as a grid of thumbnails, each drawn as you scroll.
+- **Describe it** — type "curly dark hair, round glasses, short beard, green
+  jumper, brown skin" and get it. A deterministic phrase table, not a model:
+  it matches the longest phrase it knows, understands "no glasses", and tells
+  you which of your words it did not recognise instead of guessing at them.
+- **From a photo** — drop in a head-and-shoulders photo and get a cartoon that
+  shares your colouring and features. The file is decoded by the browser's own
+  image decoder and read off a canvas in this tab; it is not uploaded and not
+  kept, which the end-to-end suite checks by failing on any off-origin request.
+  Every field comes with a confidence, only confident fields are applied, and
+  each one can be overridden. It wants one face filling much of the frame
+  against a plain background: skin is found by its colour, and warm wood, beige
+  walls and sand are the same colour as skin, so a photo of a room gets an
+  honest "no face found" rather than a brown blob. Eye colour is not read at
+  all: without facial landmarks there is nothing to measure.
+
 ## How it works
 
 A character is described by a small config: face shape, ears, hair, eyes,
@@ -84,7 +105,9 @@ Deploy `dist/` to any static host.
 |---|---|
 | `src/studio` | The drawing rig: parts, poses, colour handling, sheet rendering |
 | `src/runtime` | The `<Mascot>` component, the `<mascotry-mascot>` element, and the pointer and poke logic both share |
-| `src/image` | The pixel buffer type shared by the drawing code |
+| `src/image` | The pixel buffer type shared by the drawing and reading code |
+| `src/describe` | Words to a character: the phrase vocabulary and the parser |
+| `src/photo` | A photo to a character: face finding, colour and feature reading, and the decode |
 | `src/app` | The web app: pick a character, tune it, preview it, export it |
 | `src/demo` | A made-up allotment association's site, running the real shipped element |
 | `e2e` | Playwright: no console errors, no outside requests, real downloads, screenshots at three widths in both themes |

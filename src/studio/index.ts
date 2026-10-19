@@ -11,6 +11,10 @@ export { symbolAnchor } from './parts/symbols'
 export type {
   CanvasFactory, CanvasLike, SheetBackground, SheetKind, RenderOptions, StudioConfig,
 } from './types'
+export type {
+  BrowStyle, CheekFluff, EarType, EyePatch, EyeSize, FaceShape, FacialHair, GlassesStyle, HairStyle,
+  Headwear, Lashes, Lids, MaterialChoice, NeckAccessory, Neckline, ShirtDetail, SideAccessory,
+} from './types'
 export {
   BROW_STYLES, CHEEK_FLUFFS, EAR_TYPES, EYE_PATCHES, EYE_SIZES, FACE_SHAPES, FACIAL_HAIRS, GLASSES, HAIR_STYLES,
   HEADWEARS, LASHES, LIDS, NECK_ACCESSORIES, NECKLINES, SHIRT_DETAILS, SIDE_ACCESSORIES,

@@ -13,11 +13,14 @@ export default defineConfig({
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     coverage: {
       provider: 'v8',
-      include: ['src/studio/**', 'src/runtime/**', 'src/app/**'],
+      include: ['src/studio/**', 'src/runtime/**', 'src/app/**', 'src/describe/**', 'src/photo/**'],
       exclude: [
         '**/*.test.ts',
         '**/*.test.tsx',
         'src/studio/testCanvas.ts',
+        // The synthetic photographs the photo tests are judged against: test
+        // input, not product code.
+        'src/photo/fixtures.ts',
         'src/app/testDom.ts',
         'src/app/main.tsx',
         'src/app/render/render.worker.ts',
