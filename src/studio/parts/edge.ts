@@ -37,12 +37,13 @@ export function furRipple(cfg: StudioConfig, isFur: boolean): (t: number) => num
 }
 
 /**
- * Harmonic orders of the beard ripple. A beard breaks into a handful of clumps rather than
- * thousands of hairs, so these are coarser than the fur orders; all even, which keeps the ripple
- * mirror-symmetric about the vertical axis.
+ * Harmonic orders of the beard ripple. A beard breaks into clumps rather than into thousands of
+ * separate hairs, but the clumps are fine: low orders at a wide amplitude give the slow rolling
+ * bulges of a fleece instead. All even, which keeps the ripple mirror-symmetric about the
+ * vertical axis.
  */
-const BEARD_ORDERS: readonly number[] = [4, 8, 12]
-const BEARD_AMP = 0.16
+const BEARD_ORDERS: readonly number[] = [6, 10, 16]
+const BEARD_AMP = 0.105
 
 /**
  * Radial ripple for the beard's outer edge, as a fraction of the head radius. It fades to nothing

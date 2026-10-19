@@ -46,8 +46,9 @@ export function materialOf(c: StudioConfig): Material {
 export function makePalette(c: StudioConfig): Palette {
   const hair = liftDark(c.hairColor, 0.2)
   // A beard the same tone as the hair turns the whole head into one dark blob with eyes in it,
-  // so a derived beard is pulled clearly lighter and warmer than the hair it came from.
-  const beard = c.facialHairColor ?? tone(liftDark(c.hairColor, 0.24), { l: 0.15, s: -0.05, h: 12 })
+  // but the separation only needs a step, not a leap: pulled too far the beard reads as grey
+  // fleece lent to a dark-haired character rather than as hair of his own.
+  const beard = c.facialHairColor ?? tone(liftDark(c.hairColor, 0.21), { l: 0.045, s: 0.035, h: 6 })
   const lidFill = c.eyePatch === 'oval' ? c.patchColor : c.skin
   const mat = materialOf(c)
   const tint = c.lineTint

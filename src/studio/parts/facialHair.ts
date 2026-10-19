@@ -92,27 +92,31 @@ function drawBeardFlow(c: Ctx, R: Rig, inner: readonly ProjPt[]): void {
   }
 }
 
-const LOBES = 11
+const LOBES = 19
 
 /**
  * Clumps riding the beard's outer edge. They are unioned into the mass rather than drawn on it,
  * so the beard gets a scalloped silhouette and no internal outlines — the same trick the animals'
  * cheek fur uses. Both the placement and the radius are mirror-symmetric in t, and both shrink
  * toward the chin, where there is no room left above the body band.
+ *
+ * Each clump is a narrow spindle lying along the surface normal, not a ball sitting on it: round
+ * clumps of a soft radius read as wool, and it is the lengthways grain — many fine points all
+ * leaning the same way out of the jaw — that reads as hair instead.
  */
 function beardLobes(R: Rig): Build[] {
-  const a0 = 0.34, a1 = Math.PI - 0.34
+  const a0 = 0.32, a1 = Math.PI - 0.32
   return Array.from({ length: LOBES }, (_, i) => {
     const t = a0 + ((a1 - a0) * i) / (LOBES - 1)
     const low = Math.sin(t) ** 2
     const u = t - Math.PI / 2
-    // Biggest along the jaw: round clumps up at the cheek read as earmuffs, and down at the chin
-    // the body band is close underneath. The size alternates, which breaks up the scallop.
-    const r = (6 + 12 * Math.sin(Math.PI * Math.abs((2 * u) / Math.PI))) * (0.84 + 0.16 * Math.cos(5 * u))
-    const c0 = R.sil(t, 1.125 - 0.082 * low - 0.06, 0, 5 * Math.sin(t) ** 3)
+    // Longest along the jaw: long points up at the cheek read as a mane, and down at the chin the
+    // body band is close underneath. The length alternates, which breaks up the scallop.
+    const r = (4 + 8 * Math.sin(Math.PI * Math.abs((2 * u) / Math.PI))) * (0.74 + 0.26 * Math.cos(7 * u))
+    const c0 = R.sil(t, 1.125 - 0.082 * low - 0.05, 0, 5 * Math.sin(t) ** 3)
     // Clumps hang out and down along the surface normal rather than sitting on it as discs.
     const rot = Math.atan2((c0.y - R.cy) / R.ry, (c0.x - R.cx) / R.rx)
-    return (c: Ctx) => ellipse(c, c0.x, c0.y, r * 1.2, r * 0.66, rot)
+    return (c: Ctx) => ellipse(c, c0.x, c0.y, r * 1.85, r * 0.42, rot)
   })
 }
 
