@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { Pixels as RawImage } from '../image/types'
 import { STUDIO_PRESETS, renderCell, renderSheet } from './index'
 import { bodyTopRow } from './render'
-import { nodeCanvasFactory as createCanvas } from './testCanvas'
+import { nodeCanvasFactory as createCanvas, releaseTestCanvases, testCanvasCount } from './testCanvas'
 import type { SheetKind } from './types'
 
 const CELL = 512
@@ -159,5 +159,24 @@ describe('render validation', () => {
   })
   it('accepts partial configs (normalised)', () => {
     expect(renderCell({ ears: 'cat' }, 'directions', 4, { cell: 64, createCanvas }).width).toBe(64)
+  })
+})
+
+describe('canvas pooling', () => {
+  // @napi-rs/canvas never returns a Skia surface, so a fresh canvas per draw
+  // walks a long suite into `Create skia surface failed`. Drawing must recycle.
+  it('reuses canvases across renders instead of allocating one per draw', () => {
+    const cfg = STUDIO_PRESETS[0]!.config
+    const opts = { cell: 64, createCanvas } as const
+    renderSheet(cfg, 'directions', opts)
+    renderCell(cfg, 'reactions', 3, opts)
+    releaseTestCanvases()
+    const settled = testCanvasCount()
+    for (let i = 0; i < 20; i++) {
+      renderSheet(cfg, 'directions', opts)
+      renderCell(cfg, 'reactions', 3, opts)
+      releaseTestCanvases()
+    }
+    expect(testCanvasCount()).toBe(settled)
   })
 })

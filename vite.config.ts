@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    setupFiles: ['src/studio/testCanvasSetup.ts'],
     testTimeout: 60_000,
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     coverage: {
@@ -18,6 +19,7 @@ export default defineConfig({
         '**/*.test.ts',
         '**/*.test.tsx',
         'src/studio/testCanvas.ts',
+        'src/studio/testCanvasSetup.ts',
         // The synthetic photographs the photo tests are judged against: test
         // input, not product code.
         'src/photo/fixtures.ts',
