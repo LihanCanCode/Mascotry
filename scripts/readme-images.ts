@@ -9,16 +9,25 @@ import { writeFileSync } from 'node:fs'
 import { renderCell, renderSheet, STUDIO_PRESETS } from '../src/studio/index'
 import type { Pixels } from '../src/image/types'
 
-type Canvas = ReturnType<typeof createCanvas>
+/** Just the slice of the canvas API these helpers touch. */
+type Surface = {
+  getContext(kind: '2d'): {
+    createImageData(w: number, h: number): ImageData
+    putImageData(d: ImageData, x: number, y: number): void
+    drawImage(src: never, x: number, y: number): void
+  }
+  toBuffer(mime: 'image/png'): Buffer
+}
+const surface = (w: number, h: number): Surface => createCanvas(w, h) as unknown as Surface
 const factory = (w: number, h: number) => createCanvas(w, h) as never
 
-function paste(target: Canvas, image: Pixels, x: number, y: number): void {
-  const scratch = createCanvas(image.width, image.height)
+function paste(target: Surface, image: Pixels, x: number, y: number): void {
+  const scratch = surface(image.width, image.height)
   const sctx = scratch.getContext('2d')
   const id = sctx.createImageData(image.width, image.height)
   id.data.set(image.data)
   sctx.putImageData(id, 0, 0)
-  target.getContext('2d').drawImage(scratch, x, y)
+  target.getContext('2d').drawImage(scratch as never, x, y)
 }
 
 function byId(id: string) {
@@ -30,7 +39,7 @@ function byId(id: string) {
 /** A grid of straight-ahead poses, one per character. */
 function grid(ids: readonly string[], columns: number, cell: number, file: string): void {
   const rows = Math.ceil(ids.length / columns)
-  const canvas = createCanvas(columns * cell, rows * cell)
+  const canvas = surface(columns * cell, rows * cell)
   ids.forEach((id, i) => {
     const face = renderCell(byId(id).config, 'directions', 4, { cell, createCanvas: factory })
     paste(canvas, face, (i % columns) * cell, Math.floor(i / columns) * cell)
@@ -42,7 +51,7 @@ function grid(ids: readonly string[], columns: number, cell: number, file: strin
 /** One character's nine head directions, as the README's explanation of the format. */
 function sheet(id: string, cell: number, file: string): void {
   const image = renderSheet(byId(id).config, 'directions', { cell, createCanvas: factory })
-  const canvas = createCanvas(image.width, image.height)
+  const canvas = surface(image.width, image.height)
   paste(canvas, image, 0, 0)
   writeFileSync(file, canvas.toBuffer('image/png'))
   console.log(`${file}  ${image.width}x${image.height}`)
@@ -50,7 +59,7 @@ function sheet(id: string, cell: number, file: string): void {
 
 /** Nine moods of one character, laid out in a single strip. */
 function moods(id: string, cell: number, file: string): void {
-  const canvas = createCanvas(cell * 9, cell)
+  const canvas = surface(cell * 9, cell)
   for (let i = 0; i < 9; i++) {
     const face = renderCell(byId(id).config, 'reactions', i, { cell, createCanvas: factory })
     paste(canvas, face, i * cell, 0)
