@@ -104,8 +104,8 @@ export function drawEarShadow(ctx: Ctx, R: Rig): void {
     const P = R.proj(side * pos[0], pos[1], 1.0, true)
     if (P.z < -0.3) continue
     R.at(ctx, P, 0, () => {
-      occlude(ctx, (c) => ellipse(c, 0, -18, 30, 18), {
-        color: R.pal.skinDeep, alpha: 0.42 * R.k, dx: 1, dy: 13, steps: 3,
+      occlude(ctx, (c) => ellipse(c, 0, -24, 32, 20), {
+        color: R.pal.skinDeep, alpha: 0.3 * R.k, dx: 1, dy: 15, steps: 4,
       })
     }, Math.max(P.sx, 0.5))
   }
