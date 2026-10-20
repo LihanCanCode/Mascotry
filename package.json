@@ -17,7 +17,9 @@
     "test:e2e:shots": "playwright test e2e/looks.spec.ts",
     "shots": "esbuild --bundle --platform=node --format=esm --target=node20 --external:@napi-rs/canvas scripts/shots.ts --outfile=out/shots.mjs --log-level=warning && node out/shots.mjs",
     "images": "esbuild --bundle --platform=node --format=esm --target=node20 --external:@napi-rs/canvas scripts/readme-images.ts --outfile=out/images.mjs --log-level=warning && node out/images.mjs",
-    "gif": "esbuild --bundle --platform=node --format=esm --target=node20 --external:@napi-rs/canvas scripts/demo-gif.ts --outfile=out/gif.mjs --log-level=warning && node out/gif.mjs"
+    "gif": "esbuild --bundle --platform=node --format=esm --target=node20 --external:@napi-rs/canvas scripts/demo-gif.ts --outfile=out/gif.mjs --log-level=warning && node out/gif.mjs",
+    "stills": "pnpm exec vite build && esbuild --bundle --platform=node --format=esm --target=node20 --external:@napi-rs/canvas --external:@playwright/test scripts/stills.ts --outfile=out/stills.mjs --log-level=warning && node out/stills.mjs",
+    "reel": "pnpm exec vite build && esbuild --bundle --platform=node --format=esm --target=node20 --external:@napi-rs/canvas --external:@playwright/test scripts/reel.ts --outfile=out/reel.mjs --log-level=warning && node out/reel.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",

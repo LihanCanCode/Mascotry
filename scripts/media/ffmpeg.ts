@@ -47,3 +47,23 @@ export function report(label: string, file: string): void {
   const mb = (p.bytes / (1024 * 1024)).toFixed(2)
   console.log(`${label}  ${p.width}x${p.height}  ${p.fps}fps  ${p.seconds}s  ${mb} MB  ${file}`)
 }
+
+/**
+ * The colour at the middle of every frame, one RGB triple per frame.
+ *
+ * One ffmpeg pass that crops the centre and scales it to a single pixel, which
+ * is enough to find the clapper at the head of a recording without decoding
+ * hundreds of full frames into memory.
+ */
+export function centreColours(file: string, fps: number): readonly (readonly [number, number, number])[] {
+  const raw = execFileSync('ffmpeg', [
+    '-hide_banner', '-loglevel', 'error', '-i', file,
+    '-vf', `fps=${fps},crop=16:16:(iw-16)/2:(ih-16)/2,scale=1:1`,
+    '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-',
+  ], { maxBuffer: 1 << 26 })
+  const out: [number, number, number][] = []
+  for (let i = 0; i + 2 < raw.length; i += 3) {
+    out.push([raw[i] ?? 0, raw[i + 1] ?? 0, raw[i + 2] ?? 0])
+  }
+  return out
+}
