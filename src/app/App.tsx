@@ -74,7 +74,7 @@ export function App(): React.JSX.Element {
             </p>
             <p className="hero-actions">
               <a className="button button-loud" href="#start">Start a character</a>
-              <a className="button button-quiet" href="/demo.html">See one in use</a>
+              <a className="button button-quiet" href={`${import.meta.env.BASE_URL}demo.html`}>See one in use</a>
             </p>
           </div>
           <div className="hero-stage">

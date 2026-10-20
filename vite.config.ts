@@ -3,7 +3,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { runtimeFiles } from './vite.runtime'
 
+// GitHub Pages serves a project site from /<repo>/, so the build needs to know
+// its prefix. Unset means the root, which is what a local build and the dev
+// server want.
+const base = process.env.BASE_PATH ?? '/'
+
 export default defineConfig({
+  base,
   plugins: [react(), runtimeFiles()],
   build: { rollupOptions: { input: { main: 'index.html', demo: 'demo.html' } } },
   test: {
