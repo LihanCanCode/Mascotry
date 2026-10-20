@@ -8,6 +8,8 @@ A friendly character for the top of your page. It follows the cursor, and it rea
 
 <img src="docs/images/hero.png" alt="Eight Mascotry characters: a fox, a hooded hacker, a cat, a doctor, a panda, a footballer, a bunny and a chef" width="100%">
 
+<img src="docs/images/demo.gif" alt="A fox mascot turning its head to follow a cursor around it, then blowing a heart, sparkling, grinning and going dizzy as the cursor pokes it four times" width="720">
+
 Free, no account, no API key, nothing uploaded. Every character is drawn by code in your own browser.
 
 </div>
