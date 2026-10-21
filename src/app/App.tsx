@@ -16,6 +16,8 @@ import { PhotoPanel } from './parts/PhotoPanel'
 import { PreviewPanel } from './parts/PreviewPanel'
 import { TunePanel } from './parts/TunePanel'
 import { ThemeToggle } from './parts/ThemeToggle'
+import { StarLink } from './star/StarLink'
+import { StarPrompt } from './star/StarPrompt'
 
 const HERO_SIZE = 180
 
@@ -60,7 +62,10 @@ export function App(): React.JSX.Element {
           </span>
           Mascotry
         </p>
-        <ThemeToggle />
+        <div className="masthead-actions">
+          <StarLink />
+          <ThemeToggle />
+        </div>
       </header>
 
       <main>
@@ -160,6 +165,7 @@ export function App(): React.JSX.Element {
             resolution={state.resolution}
             onResolution={onResolution}
           />
+          <StarPrompt ready={urls !== null} />
         </section>
       </main>
 

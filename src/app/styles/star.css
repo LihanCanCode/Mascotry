@@ -1,0 +1,79 @@
+/*
+  The two places this project asks to be starred: a quiet link in the masthead,
+  and one card at the end of the export step.
+
+  Both are drawn in the same ink as everything else — 2px line work on a sheet,
+  no badge, no logo, no fetched image. The card is a torn-off strip of the same
+  paper: dashed on top, so it reads as an aside rather than another step.
+*/
+
+.masthead-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+
+/* .button is inline-grid, which would stack the star above the words. */
+.star-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--t-sm);
+}
+
+.star-link:hover .star-glyph,
+.star-ask-go:hover .star-glyph {
+  fill: currentColor;
+}
+
+.star-glyph {
+  flex: none;
+  transition: fill var(--dur) var(--ease);
+}
+
+.star-ask {
+  display: grid;
+  gap: var(--s-3);
+  max-width: 42rem;
+  margin-top: var(--s-5);
+  padding: var(--s-4);
+  background: var(--sheet);
+  border: var(--hair) solid var(--rule);
+  border-top: var(--stroke) dashed var(--line);
+  border-radius: var(--r-sm);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .star-ask {
+    animation: star-ask-in 220ms var(--ease) both;
+  }
+}
+
+@keyframes star-ask-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.star-ask-words {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--ink-soft);
+}
+
+.star-ask-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.star-ask-go {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}

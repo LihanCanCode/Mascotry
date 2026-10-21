@@ -2,6 +2,10 @@
 
 # Mascotry
 
+[![Stars](https://img.shields.io/github/stars/LihanCanCode/Mascotry?style=flat-square&label=stars&labelColor=0d2a26&color=00e05f)](https://github.com/LihanCanCode/Mascotry/stargazers)
+[![Live demo](https://img.shields.io/badge/live-demo-00e05f?style=flat-square&labelColor=0d2a26)](https://lihancancode.github.io/Mascotry/)
+[![Licence: MIT](https://img.shields.io/github/license/LihanCanCode/Mascotry?style=flat-square&labelColor=0d2a26&color=9e1d45)](LICENSE)
+
 **Draw a mascot that watches the reader.**
 
 A friendly character for the top of your page. It follows the cursor, and it reacts when you poke it.
@@ -208,6 +212,10 @@ Characters are not images with the colours swapped. A config describes the face 
 - **Owl, penguin, dog, tiger, deer and the objects** are planned but unbuilt: they need a beak, a snout, droopy ears, markings and a second head shape. `docs/roster.md` lists what each costs.
 - **The photo route refuses ordinary snapshots** taken against warm backgrounds. It is honest about it, but a sliding-window face search would fix it.
 - Eye colour, glasses shape and a moustache-versus-beard distinction are never guessed from a photo, because none of them can be measured honestly without facial landmarks.
+
+## If you like it
+
+A [star on GitHub](https://github.com/LihanCanCode/Mascotry) is how I find out anyone used this. That is the whole ask — there is nothing to sign up for and nothing to pay.
 
 ## Licence
 
