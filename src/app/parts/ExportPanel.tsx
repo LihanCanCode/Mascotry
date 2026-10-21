@@ -25,6 +25,8 @@ interface ExportPanelProps {
   readonly size: number
   readonly resolution: Resolution
   readonly onResolution: (resolution: Resolution) => void
+  /** The visitor actually left with something: a file saved, or the snippet copied. */
+  readonly onTake: () => void
 }
 
 /**
@@ -37,7 +39,7 @@ interface ExportPanelProps {
  * the page it was pasted into.
  */
 export function ExportPanel({
-  urls, mime, slug, name, size, resolution, onResolution,
+  urls, mime, slug, name, size, resolution, onResolution, onTake,
 }: ExportPanelProps): React.JSX.Element {
   const [flavour, setFlavour] = useState<Flavour>('html')
   const extension = extensionOf(mime ?? 'image/webp')
@@ -71,11 +73,21 @@ export function ExportPanel({
           ? <p className="hint">They will appear here once the drawing finishes.</p>
           : (
             <p className="download-row">
-              <a className="button" href={urls.directions} download={sheetFileName(slug, 'directions', extension)}>
+              <a
+                className="button"
+                href={urls.directions}
+                download={sheetFileName(slug, 'directions', extension)}
+                onClick={onTake}
+              >
                 Download poses
                 <span className="button-note">{sheetFileName(slug, 'directions', extension)}</span>
               </a>
-              <a className="button" href={urls.reactions} download={sheetFileName(slug, 'reactions', extension)}>
+              <a
+                className="button"
+                href={urls.reactions}
+                download={sheetFileName(slug, 'reactions', extension)}
+                onClick={onTake}
+              >
                 Download moods
                 <span className="button-note">{sheetFileName(slug, 'reactions', extension)}</span>
               </a>
@@ -85,7 +97,13 @@ export function ExportPanel({
         <h3 className="sub">The two runtime files</h3>
         <p className="download-row">
           {RUNTIME_DOWNLOADS.map((item) => (
-            <a className="button button-quiet" href={`/${item.file}`} download={item.file} key={item.file}>
+            <a
+              className="button button-quiet"
+              href={`/${item.file}`}
+              download={item.file}
+              key={item.file}
+              onClick={onTake}
+            >
               {item.title}
               <span className="button-note">{item.note}</span>
             </a>
@@ -114,7 +132,11 @@ export function ExportPanel({
         >
           <code>{code}</code>
         </pre>
-        <CopyButton text={code} what={flavour === 'html' ? 'the HTML snippet' : 'the React snippet'} />
+        <CopyButton
+          text={code}
+          what={flavour === 'html' ? 'the HTML snippet' : 'the React snippet'}
+          onCopied={onTake}
+        />
       </div>
     </div>
   )

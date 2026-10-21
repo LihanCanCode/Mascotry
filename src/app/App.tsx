@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer, useRef } from 'react'
+import { useCallback, useMemo, useReducer, useRef, useState } from 'react'
 import type { StudioConfig } from '../studio'
 import { Mascot } from '../runtime/Mascot'
 import { useBlobUrls } from './hooks/useBlobUrls'
@@ -33,6 +33,9 @@ function announcement(phase: string, error: string | null): string {
 export function App(): React.JSX.Element {
   const [state, dispatch] = useReducer(reduce, initialState)
   const cache = useRef(createThumbCache()).current
+  // The ask waits for this: the first time the visitor actually leaves with
+  // something, rather than the moment the files happen to exist.
+  const [took, setTook] = useState(false)
 
   useSheetRender(state.config, state.resolution, state.revision, dispatch)
   const urls = useBlobUrls(state.sheets)
@@ -50,6 +53,7 @@ export function App(): React.JSX.Element {
   const onDoor = useCallback((door: Door) => dispatch({ type: 'setDoor', door }), [])
   const onDescribe = useCallback((text: string) => dispatch({ type: 'describe', text }), [])
   const onRead = useCallback((reading: PhotoReading) => dispatch({ type: 'readPhoto', reading }), [])
+  const onTake = useCallback(() => setTook(true), [])
 
   return (
     <>
@@ -164,8 +168,9 @@ export function App(): React.JSX.Element {
             size={state.previewSize}
             resolution={state.resolution}
             onResolution={onResolution}
+            onTake={onTake}
           />
-          <StarPrompt ready={urls !== null} />
+          <StarPrompt ready={took} />
         </section>
       </main>
 

@@ -205,6 +205,24 @@ describe('App', () => {
     expect((screen.getByLabelText('Describe your character') as HTMLTextAreaElement).value).toBe('a beret')
   })
 
+  it('does not ask for a star on arrival, only once something has been taken', async () => {
+    localStorage.clear()
+    render(<App />)
+    await waitForMascot()
+
+    // The files exist by now. That is not the same as the visitor having one.
+    expect(screen.queryByRole('link', { name: 'Star Mascotry on GitHub' })).toBeNull()
+    // The quiet link is there the whole time.
+    expect(screen.getByRole('link', { name: 'Star on GitHub' })).toBeTruthy()
+
+    const stop = (event: Event): void => event.preventDefault()
+    document.addEventListener('click', stop)
+    fireEvent.click(screen.getByRole('link', { name: /Download poses/ }))
+    document.removeEventListener('click', stop)
+
+    expect(screen.getByRole('link', { name: 'Star Mascotry on GitHub' })).toBeTruthy()
+  })
+
   it('releases every object URL when it goes away', async () => {
     const view = render(<App />)
     await waitForMascot()

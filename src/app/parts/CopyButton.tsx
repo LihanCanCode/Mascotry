@@ -1,8 +1,11 @@
+import { useEffect } from 'react'
 import { useClipboard } from '../hooks/useClipboard'
 
 interface CopyButtonProps {
   readonly text: string
   readonly what: string
+  /** Called once the text is really on the clipboard, never when it is refused. */
+  readonly onCopied?: () => void
 }
 
 const WORDING: Readonly<Record<string, string>> = {
@@ -18,8 +21,13 @@ const WORDING: Readonly<Record<string, string>> = {
  * can be refused — outside a secure context, or with the permission denied —
  * and a button that looks like it worked is the worst of the three outcomes.
  */
-export function CopyButton({ text, what }: CopyButtonProps): React.JSX.Element {
+export function CopyButton({ text, what, onCopied }: CopyButtonProps): React.JSX.Element {
   const { state, copy } = useClipboard()
+
+  useEffect(() => {
+    if (state === 'copied') onCopied?.()
+  }, [state, onCopied])
+
   return (
     <span className="copy">
       <button

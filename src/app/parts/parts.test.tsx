@@ -212,15 +212,17 @@ describe('PreviewPanel', () => {
 describe('ExportPanel', () => {
   function panel(mime: 'image/webp' | 'image/png' = 'image/webp'): {
     onResolution: ReturnType<typeof vi.fn>
+    onTake: ReturnType<typeof vi.fn>
   } {
     const onResolution = vi.fn()
+    const onTake = vi.fn()
     render(
       <ExportPanel
         urls={URLS} mime={mime} slug="pip" name="Pip" size={128} resolution={360}
-        onResolution={onResolution}
+        onResolution={onResolution} onTake={onTake}
       />,
     )
-    return { onResolution }
+    return { onResolution, onTake }
   }
 
   it('reads the extension off the format that was really encoded', () => {
@@ -257,6 +259,27 @@ describe('ExportPanel', () => {
     expect(onResolution).toHaveBeenCalledWith(512)
   })
 
+  it('reports every way of leaving with something: both sheets and both runtime files', () => {
+    const { onTake } = panel()
+    // jsdom would try to follow each download link and complain; the click is
+    // all this cares about.
+    const stop = (event: Event): void => event.preventDefault()
+    document.addEventListener('click', stop)
+    for (const name of [/Download poses/, /Download moods/, /For any page/, /For React/]) {
+      fireEvent.click(screen.getByRole('link', { name }))
+    }
+    document.removeEventListener('click', stop)
+    expect(onTake).toHaveBeenCalledTimes(4)
+  })
+
+  it('reports a copied snippet as leaving with something', async () => {
+    vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } })
+    const { onTake } = panel()
+    fireEvent.click(screen.getByRole('button', { name: /Copy/ }))
+    await screen.findByText(/copied to the clipboard/)
+    expect(onTake).toHaveBeenCalled()
+  })
+
   it('says how big the sheet will be', () => {
     panel()
     expect(screen.getByText(/1080px square/)).toBeTruthy()
@@ -273,7 +296,7 @@ describe('ExportPanel', () => {
     render(
       <ExportPanel
         urls={null} mime={null} slug="pip" name="Pip" size={128} resolution={256}
-        onResolution={vi.fn()}
+        onResolution={vi.fn()} onTake={vi.fn()}
       />,
     )
     expect(screen.getByText(/appear here once the drawing finishes/)).toBeTruthy()
@@ -293,10 +316,12 @@ describe('CopyButton', () => {
 
   it('says so when the browser refuses, rather than looking like it worked', async () => {
     vi.stubGlobal('navigator', { clipboard: { writeText: vi.fn().mockRejectedValue(new Error('denied')) } })
-    render(<CopyButton text="hello" what="the snippet" />)
+    const onCopied = vi.fn()
+    render(<CopyButton text="hello" what="the snippet" onCopied={onCopied} />)
 
     fireEvent.click(screen.getByRole('button'))
     await screen.findByText(/would not let the page use the clipboard/)
+    expect(onCopied).not.toHaveBeenCalled()
   })
 })
 
