@@ -36,7 +36,7 @@ jobs:
           # A project site lives under /<repo>/, so the assets need that prefix.
           BASE_PATH: /Mascotry/
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
